@@ -1,0 +1,17 @@
+#editor-parent {
+  grid-area: rightside;
+  padding: var(--medium);
+  overflow: scroll;
+  border-left: 1px solid lightgray;
+}
+
+#editor {
+  min-width: 100%;
+  min-height: 100%;
+  width: max-content;
+  height: max-content;
+  padding-right: var(--medium);
+  padding-bottom: 56px;
+  white-space: nowrap;
+  overflow: visible;
+}
