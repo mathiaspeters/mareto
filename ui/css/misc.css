@@ -22,11 +22,29 @@ hr {
   align-items: center;
 }
 
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
 .hover-shadow:hover {
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19);
 }
 
 .options-item {
-  height: var(--xlarge);
-  width: 99%;
+  max-height: var(--xlarge);
+  width: calc(100% - 2px);
+}
+
+.gone {
+  display: none;
+}
+
+.vertical-rule {
+  height: 100%;
+  border-left: 1px solid lightgray;
+}
+
+.highlighted {
+  background-color: #00808050;
 }

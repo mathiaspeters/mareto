@@ -1,8 +1,7 @@
 #editor-parent {
-  grid-area: rightside;
-  padding: var(--medium);
   overflow: scroll;
-  border-left: 1px solid lightgray;
+  height: 100%;
+  width: 100%;
 }
 
 #editor {
@@ -11,7 +10,7 @@
   width: max-content;
   height: max-content;
   padding-right: var(--medium);
-  padding-bottom: 56px;
+  padding-bottom: var(--xlarge);
   white-space: nowrap;
   overflow: visible;
 }

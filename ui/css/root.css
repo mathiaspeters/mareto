@@ -6,7 +6,7 @@
   --xlarge: 48px;
 
   /* fonts */
-  --font-family: Arial, Helvetica, sans-serif;
+  --font-family: monospace;
   --font-weight: 375;
   --font-size: 20px;
 
@@ -29,14 +29,18 @@
 }
 
 #container {
-  height: calc(100vh - 24px);
-  width: calc(100vw - 24px);
-  display: grid;
-  grid-template-columns: 400px auto;
-  grid-template-rows: var(--xlarge) auto var(--xlarge);
-  grid-template-areas:
-    "openbtn rightside"
-    "leftside rightside"
-    "savebtn rightside";
+  height: 100vh;
+  width: 100vw;
+}
+
+#left-pane {
+  width: calc(400px + (2 * var(--medium)));
+  height: calc(100% - (2 * var(--medium)));
+  padding: var(--medium);
+}
+
+#right-pane {
+  height: calc(100% - (2 * var(--medium)));
+  width: calc(100% - 400px - (4 * var(--medium)));
   padding: var(--medium);
 }

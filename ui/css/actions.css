@@ -1,16 +1,26 @@
 #open-folder-btn {
-  grid-area: openbtn;
   border: 2px solid teal;
   color: black;
-  padding-left: var(--medium);
-  padding-right: var(--medium);
+  height: var(--xlarge);
+  overflow: hidden;
+  justify-content: center;
+}
+
+#open-folder-btn img {
+  margin-left: var(--medium);
+}
+
+#open-folder-btn div {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 #apply-changes-btn {
   background-color: teal;
   border: 1px solid teal;
   color: white;
-  grid-area: savebtn;
+  height: var(--xlarge);
 }
 
 #apply-changes-btn * {

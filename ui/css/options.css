@@ -1,13 +1,9 @@
 #options {
-  grid-area: leftside;
   overflow: scroll;
   border: 1px solid lightgrey;
-  display: flex;
-  flex-direction: column;
-  padding-top: var(--large);
-  padding-bottom: var(--large);
-  padding-left: var(--medium);
-  padding-right: var(--medium);
+  max-height: fit-content;
+  flex-grow: 1000;
+  padding: var(--large) var(--medium);
 }
 
 #filter-wrapper {
@@ -27,7 +23,6 @@
 
 #filter-icon {
   padding: var(--medium);
-  color: lightgrey;
 }
 
 #clear-button {
@@ -35,15 +30,18 @@
   width: var(--large);
   height: var(--large);
   text-align: center;
+  font-size: 18px;
+  font-family: sans-serif;
 }
 
 #regex-button {
-  background-color: antiquewhite;
   padding: var(--small);
   width: var(--large);
   height: var(--large);
   text-align: center;
   margin-right: var(--small);
+  font-size: 18px;
+  font-family: sans-serif;
 }
 
 #min-depth-limit {

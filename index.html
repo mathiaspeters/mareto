@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -12,220 +13,225 @@
     <link rel="stylesheet" href="/ui/css/editor.css" />
 
     <title>Mareto</title>
-  </head>
+</head>
 
-  <body>
-    <div id="container" class="medium-gap">
-      <div
-        id="open-folder-btn"
-        class="rounded medium-gap flex-row clickable hover-shadow"
-      >
-        <span>
-          <img src="ui/assets/folder_open.svg" />
-        </span>
-        <span id="folder-txt">No folder selected</span>
-      </div>
+<body>
+    <div id="container" class="flex-row">
 
-      <div id="options" class="rounded medium-gap">
-        <div id="filter-wrapper" class="options-item rounded">
-          <img id="filter-icon" src="ui/assets/filter_list.svg" />
-          <input type="text" id="filter" placeholder="Filter items" />
-          <span id="clear-button" class="rounded clickable">x</span>
-          <span id="regex-button" class="rounded clickable">.*</span>
+        <div id="left-pane" class="flex-column medium-gap">
+
+            <div id="open-folder-btn" class="rounded medium-gap clickable hover-shadow options-item">
+                <img src="ui/assets/folder_open.svg" />
+                <div>No folder selected</div>
+            </div>
+
+            <div id="apply-changes-btn" class="rounded clickable hover-shadow options-item">
+                <div>Apply changes</div>
+            </div>
+
+            <div id="options" class="rounded medium-gap flex-column">
+                <div id="filter-wrapper" class="options-item rounded">
+                    <img id="filter-icon" src="ui/assets/filter_list.svg" />
+                    <input type="text" id="filter" placeholder="Filter items" />
+                    <span id="clear-button" class="rounded clickable gone">x</span>
+                    <span id="regex-button" class="rounded clickable highlighted">.*</span>
+                </div>
+
+                <hr />
+
+                <div>
+                    <div>Minimum depth limit</div>
+                    <div class="options-item medium-gap">
+                        <label class="switch">
+                            <input type="checkbox" id="min-depth-chkbox" />
+                            <span class="slider"></span>
+                        </label>
+                        <input id="min-depth-limit" type="number" min="0" placeholder="Minimum depth limit" />
+                    </div>
+                </div>
+
+                <div>
+                    <div>Maximum depth limit</div>
+                    <div class="options-item medium-gap">
+                        <label class="switch">
+                            <input type="checkbox" id="max-depth-chkbox" />
+                            <span class="slider"></span>
+                        </label>
+                        <input id="max-depth-limit" type="number" min="0" placeholder="Maximum depth limit" />
+                    </div>
+                </div>
+
+                <hr />
+
+                <span class="options-item medium-gap">
+                    <span>
+                        <label class="switch">
+                            <input type="checkbox" id="show-files-chkbox" />
+                            <span class="slider"></span>
+                        </label>
+                    </span>
+                    <span>Show files</span>
+                </span>
+
+                <span class="options-item medium-gap">
+                    <span>
+                        <label class="switch">
+                            <input type="checkbox" id="show-folders-chkbox" />
+                            <span class="slider"></span>
+                        </label>
+                    </span>
+                    <span>Show folders</span>
+                </span>
+
+                <hr />
+
+                <select id="sorting" class="options-item">
+                    <option value="asc">Sort ascending</option>
+                    <option value="desc">Sort descending</option>
+                </select>
+
+                <select id="display-type" class="options-item">
+                    <option value="absolute">Show absolute paths</option>
+                    <option value="relative">Show relative paths</option>
+                    <option value="just-file">Show just file name</option>
+                </select>
+
+                <hr />
+
+                <span class="options-item medium-gap">
+                    <span>
+                        <label class="switch">
+                            <input type="checkbox" id="remove-empty-chkbox" />
+                            <span class="slider"></span>
+                        </label>
+                    </span>
+                    <span>Remove empty folders</span>
+                </span>
+
+                <span class="options-item medium-gap">
+                    <span>
+                        <label class="switch">
+                            <input type="checkbox" id="preview-changes-chkbox" />
+                            <span class="slider"></span>
+                        </label>
+                    </span>
+                    <span>Preview changes</span>
+                </span>
+
+                <hr />
+
+                <select id="app-theme" class="options-item">
+                    <option value="system">Use system theme</option>
+                    <option value="light">Use light theme</option>
+                    <option value="dark">Use dark theme</option>
+                </select>
+            </div>
+
         </div>
 
-        <hr />
+        <div class="vertical-rule"></div>
 
-        <div>
-          <div>Minimum depth limit</div>
-          <div id="min-depth" class="options-item medium-gap">
-            <label class="switch">
-              <input type="checkbox" />
-              <span class="slider"></span>
-            </label>
-            <input
-              id="min-depth-limit"
-              type="number"
-              min="0"
-              placeholder="Minimum depth limit"
-            />
-          </div>
+        <div id="right-pane">
+            <div id="editor-parent">
+                <div id="editor" contenteditable="plaintext-only">
+                    <p>
+                        line.jfeajkfsakfs.fesajfekabsf.ksnfejsae.knsa.kjfesakbf.jsafeb.safe.nasknfe.aksnfe.ksabfe.kjas.kfeba.kfefa
+                    </p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                    <p>line</p>
+                </div>
+            </div>
         </div>
 
-        <div>
-          <div>Maximum depth limit</div>
-          <div id="max-depth" class="options-item medium-gap">
-            <label class="switch">
-              <input type="checkbox" />
-              <span class="slider"></span>
-            </label>
-            <input
-              id="max-depth-limit"
-              type="number"
-              min="0"
-              placeholder="Maximum depth limit"
-            />
-          </div>
-        </div>
-
-        <hr />
-
-        <span id="show-files" class="options-item medium-gap">
-          <span>
-            <label class="switch">
-              <input type="checkbox" />
-              <span class="slider"></span>
-            </label>
-          </span>
-          <span>Show files</span>
-        </span>
-
-        <span id="show-folders" class="options-item medium-gap">
-          <span>
-            <label class="switch">
-              <input type="checkbox" />
-              <span class="slider"></span>
-            </label>
-          </span>
-          <span>Show folders</span>
-        </span>
-
-        <hr />
-
-        <select id="sorting" class="options-item">
-          <option value="asc">Sort ascending</option>
-          <option value="desc">Sort descending</option>
-        </select>
-
-        <select id="display-type" class="options-item">
-          <option value="absolute">Show absolute paths</option>
-          <option value="relative">Show relative paths</option>
-          <option value="just-file">Show just file name</option>
-        </select>
-
-        <hr />
-
-        <span id="remove-empty" class="options-item medium-gap">
-          <span>
-            <label class="switch">
-              <input type="checkbox" />
-              <span class="slider"></span>
-            </label>
-          </span>
-          <span>Remove empty folders</span>
-        </span>
-
-        <select id="app-theme" class="options-item">
-          <option value="system">Use system theme</option>
-          <option value="light">Use light theme</option>
-          <option value="dark">Use dark theme</option>
-        </select>
-      </div>
-
-      <div
-        id="apply-changes-btn"
-        class="rounded flex-row clickable hover-shadow"
-      >
-        <div>Apply changes</div>
-      </div>
-
-      <div id="editor-parent">
-        <div id="editor" contenteditable="plaintext-only">
-          <p>
-            line.jfeajkfsakfs.fesajfekabsf.ksnfejsae.knsa.kjfesakbf.jsafeb.safe.nasknfe.aksnfe.ksabfe.kjas.kfeba.kfefa
-          </p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-          <p>line</p>
-        </div>
-      </div>
     </div>
 
     <script type="module" src="/ui/main.ts" defer></script>
-  </body>
+</body>
+
 </html>

@@ -12,7 +12,7 @@ export default defineConfig(async () => ({
     strictPort: true,
     watch: {
       // 3. tell vite to ignore watching `ui`
-      ignored: ["**/ui/**"],
+      ignored: ["**/logic/**"],
     },
   },
 }));
