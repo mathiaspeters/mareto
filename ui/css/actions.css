@@ -4,10 +4,7 @@
   height: var(--xlarge);
   overflow: hidden;
   justify-content: center;
-}
-
-#open-folder-btn img {
-  margin-left: var(--medium);
+  padding: 0 var(--medium);
 }
 
 #open-folder-btn div {
