@@ -1,4 +1,4 @@
-//use std::path::PathBuf;
+use std::path::PathBuf;
 
 use iced::{
     executor,
@@ -12,16 +12,17 @@ use crate::{
     options::SortingOption,
 };
 
-//#[derive(Debug, Clone)]
-//enum Error {
-//    IOError(std::io::ErrorKind),
-//}
+#[derive(Debug, Clone)]
+pub enum Error {
+    DialogClosed,
+    //IOError(std::io::ErrorKind),
+}
 
 #[derive(Debug, Clone)]
 pub enum Message {
     // Top-level actions
     OpenFolder,
-    //FolderSelected(Result<PathBuf, Error>),
+    FolderSelected(Result<PathBuf, Error>),
     ApplyChanges,
     //ApplyOutcome(Result<(), Error>),
 
@@ -68,8 +69,12 @@ impl Application for Mareto {
     fn update(&mut self, message: Self::Message) -> iced::Command<Self::Message> {
         match message {
             // Top-level actions
-            Message::OpenFolder => Command::none(),
-            //Message::FolderSelected(_) => Command::none(),
+            Message::OpenFolder => Command::perform(pick_folder(), Message::FolderSelected),
+            Message::FolderSelected(Ok(path)) => {
+                self.editor_state.open_folder = Some(path);
+                Command::none()
+            }
+            Message::FolderSelected(_) => Command::none(),
             Message::ApplyChanges => Command::none(),
             //Message::ApplyOutcome(_) => Command::none(),
 
@@ -168,4 +173,13 @@ fn top_level_button(label: &str, on_press: Message) -> Element<'_, Message> {
         .width(Length::Fill)
         .padding(12)
         .into()
+}
+
+async fn pick_folder() -> Result<PathBuf, Error> {
+    rfd::AsyncFileDialog::new()
+        .set_title("Choose a folder...")
+        .pick_folder()
+        .await
+        .ok_or(Error::DialogClosed)
+        .map(|fh| fh.path().to_owned())
 }
