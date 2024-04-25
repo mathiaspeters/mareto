@@ -2,11 +2,27 @@ use std::path::PathBuf;
 
 use iced::widget::text_editor;
 
+use crate::fs::FileSystemEntry;
+
 #[derive(Debug, Default)]
 pub struct EditorState {
-    pub contents: text_editor::Content,
     pub open_folder: Option<PathBuf>,
+    pub entries: Vec<FileSystemEntry>,
+
+    pub contents: text_editor::Content,
     pub find_and_replace: FindAndReplace,
+}
+
+impl EditorState {
+    pub fn show_entries(&mut self) {
+        let content = self
+            .entries
+            .iter()
+            .map(|e| e.path.as_str())
+            .collect::<Vec<_>>()
+            .join("\n");
+        self.contents = text_editor::Content::with_text(&content);
+    }
 }
 
 #[derive(Debug, Clone, Default)]

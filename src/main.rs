@@ -1,4 +1,5 @@
 mod editor;
+mod fs;
 mod mareto;
 mod options;
 

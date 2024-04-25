@@ -6,23 +6,33 @@ use iced::{
     Application, Command, Element, Length, Theme,
 };
 
-use crate::options::{options_view, DisplayType, Options};
 use crate::{
     editor::{editor_view, EditorState},
+    fs::get_entries_for_path,
     options::SortingOption,
+};
+use crate::{
+    fs::FileSystemEntry,
+    options::{options_view, DisplayType, Options},
 };
 
 #[derive(Debug, Clone)]
 pub enum Error {
     DialogClosed,
-    //IOError(std::io::ErrorKind),
+    IOError(std::io::ErrorKind),
+}
+
+impl From<std::io::Error> for Error {
+    fn from(value: std::io::Error) -> Self {
+        Self::IOError(value.kind())
+    }
 }
 
 #[derive(Debug, Clone)]
 pub enum Message {
     // Top-level actions
     OpenFolder,
-    FolderSelected(Result<PathBuf, Error>),
+    FolderSelected(Result<(PathBuf, Vec<FileSystemEntry>), Error>),
     ApplyChanges,
     //ApplyOutcome(Result<(), Error>),
 
@@ -70,8 +80,10 @@ impl Application for Mareto {
         match message {
             // Top-level actions
             Message::OpenFolder => Command::perform(pick_folder(), Message::FolderSelected),
-            Message::FolderSelected(Ok(path)) => {
+            Message::FolderSelected(Ok((path, entries))) => {
                 self.editor_state.open_folder = Some(path);
+                self.editor_state.entries = entries;
+                self.editor_state.show_entries();
                 Command::none()
             }
             Message::FolderSelected(_) => Command::none(),
@@ -175,11 +187,14 @@ fn top_level_button(label: &str, on_press: Message) -> Element<'_, Message> {
         .into()
 }
 
-async fn pick_folder() -> Result<PathBuf, Error> {
-    rfd::AsyncFileDialog::new()
+async fn pick_folder() -> Result<(PathBuf, Vec<FileSystemEntry>), Error> {
+    let path = rfd::AsyncFileDialog::new()
         .set_title("Choose a folder...")
         .pick_folder()
         .await
         .ok_or(Error::DialogClosed)
-        .map(|fh| fh.path().to_owned())
+        .map(|fh| fh.path().to_owned())?;
+    let entries = get_entries_for_path(&path)?;
+
+    Ok((path, entries))
 }
