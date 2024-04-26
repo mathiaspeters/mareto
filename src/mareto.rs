@@ -83,7 +83,7 @@ impl Application for Mareto {
             Message::FolderSelected(Ok((path, entries))) => {
                 self.editor_state.open_folder = Some(path);
                 self.editor_state.entries = entries;
-                self.editor_state.show_entries();
+                self.editor_state.show_filtered_entries(&self.options);
                 Command::none()
             }
             Message::FolderSelected(_) => Command::none(),
@@ -121,14 +121,17 @@ impl Application for Mareto {
             }
             Message::ShowFilesToggled(is_active) => {
                 self.options.show_files = is_active;
+                self.editor_state.show_filtered_entries(&self.options);
                 Command::none()
             }
             Message::ShowFoldersToggled(is_active) => {
                 self.options.show_folders = is_active;
+                self.editor_state.show_filtered_entries(&self.options);
                 Command::none()
             }
             Message::SortOrderSelected(order) => {
                 self.options.sorting.selected = Some(order);
+                self.editor_state.show_filtered_entries(&self.options);
                 Command::none()
             }
             Message::DisplayTypeSelected(display_type) => {

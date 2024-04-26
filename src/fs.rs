@@ -18,7 +18,6 @@ pub struct FileSystemEntry {
 pub fn get_entries_for_path(path: impl AsRef<Path>) -> Result<Vec<FileSystemEntry>, Error> {
     let mut entries = vec![];
     get_entries_for_path_impl(path, 0, &mut entries)?;
-    entries.sort_unstable_by(|e1, e2| e1.path.cmp(&e2.path));
     Ok(entries)
 }
 
