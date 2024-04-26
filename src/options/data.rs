@@ -22,8 +22,8 @@ impl Default for Options {
             filter_input: Default::default(),
             min_depth: Default::default(),
             max_depth: Default::default(),
-            show_files: Default::default(),
-            show_folders: Default::default(),
+            show_files: true,
+            show_folders: true,
             sorting: DropDownState {
                 selected: Some(SortingOption::Ascending),
                 options: combo_box::State::new(SortingOption::variants()),
@@ -32,8 +32,8 @@ impl Default for Options {
                 selected: Some(DisplayType::RelativePath),
                 options: combo_box::State::new(DisplayType::variants()),
             },
-            remove_empty: Default::default(),
-            preview_changes: Default::default(),
+            remove_empty: false,
+            preview_changes: true,
             theme: DropDownState {
                 selected: Some(Theme::Light),
                 options: combo_box::State::new(vec![Theme::Light, Theme::Dark]),
