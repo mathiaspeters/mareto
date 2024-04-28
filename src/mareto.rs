@@ -101,22 +101,32 @@ impl Application for Mareto {
             }
             Message::MinDepthToggled(is_active) => {
                 self.options.min_depth.is_active = is_active;
+                self.editor_state.show_filtered_entries(&self.options);
                 Command::none()
             }
             Message::MinDepthLimitChanged(mut limit) => {
                 limit.retain(|c| c.is_numeric());
-                self.options.min_depth.limit =
-                    limit.parse().expect("Only numbers should still be there");
+                self.options.min_depth.limit = if limit.is_empty() {
+                    None
+                } else {
+                    Some(limit.parse().expect("Only numbers should still be there"))
+                };
+                self.editor_state.show_filtered_entries(&self.options);
                 Command::none()
             }
             Message::MaxDepthToggled(is_active) => {
                 self.options.max_depth.is_active = is_active;
+                self.editor_state.show_filtered_entries(&self.options);
                 Command::none()
             }
             Message::MaxDepthLimitChanged(mut limit) => {
                 limit.retain(|c| c.is_numeric());
-                self.options.max_depth.limit =
-                    limit.parse().expect("Only numbers should still be there");
+                self.options.max_depth.limit = if limit.is_empty() {
+                    None
+                } else {
+                    Some(limit.parse().expect("Only numbers should still be there"))
+                };
+                self.editor_state.show_filtered_entries(&self.options);
                 Command::none()
             }
             Message::ShowFilesToggled(is_active) => {

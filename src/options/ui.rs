@@ -102,10 +102,13 @@ where
             toggler(None, state.is_active, on_toggled).width(Length::Shrink)
         ]
         .width(Length::Fill),
-        text_input(&label, &state.limit.to_string())
-            .on_input(on_input)
-            .width(Length::Fill)
-            .padding(12)
+        text_input(
+            &label,
+            &state.limit.map(|l| l.to_string()).unwrap_or("".to_owned())
+        )
+        .on_input(on_input)
+        .width(Length::Fill)
+        .padding(12)
     ]
     .spacing(8)
     .into()

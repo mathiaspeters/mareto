@@ -17,7 +17,7 @@ pub struct FileSystemEntry {
 
 pub fn get_entries_for_path(path: impl AsRef<Path>) -> Result<Vec<FileSystemEntry>, Error> {
     let mut entries = vec![];
-    get_entries_for_path_impl(path, 0, &mut entries)?;
+    get_entries_for_path_impl(path, 1, &mut entries)?;
     Ok(entries)
 }
 

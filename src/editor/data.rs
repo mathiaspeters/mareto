@@ -45,6 +45,12 @@ impl EditorState {
         {
             return false;
         }
+        if options.min_depth.is_active && options.min_depth.limit.is_some_and(|l| entry.depth < l) {
+            return false;
+        }
+        if options.max_depth.is_active && options.max_depth.limit.is_some_and(|l| entry.depth > l) {
+            return false;
+        }
         true
     }
 }

@@ -51,7 +51,7 @@ pub struct FilterInput {
 #[derive(Debug, Clone, Default)]
 pub struct DepthLimit {
     pub is_active: bool,
-    pub limit: usize,
+    pub limit: Option<usize>,
 }
 
 #[derive(Debug, Clone)]
