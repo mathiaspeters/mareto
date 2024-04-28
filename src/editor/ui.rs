@@ -16,6 +16,7 @@ pub fn editor_view(state: &EditorState) -> Element<'_, Message> {
             text(folder),
             Space::with_width(Length::Fill),
             text_input("Find", &s).width(150).padding(8),
+            button("Aa").padding(8), // Case sentivite
             button(".*").padding(8), // Use regex
             Space::with_width(8),
             text_input("Replace", &s).width(150).padding(8),

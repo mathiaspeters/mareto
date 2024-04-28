@@ -1,4 +1,5 @@
 use iced::widget::text_editor;
+use regex::RegexBuilder;
 
 use crate::{
     fs::{EntryType, FileSystemEntry},
@@ -16,20 +17,54 @@ pub struct EditorState {
 
 impl EditorState {
     pub fn show_filtered_entries(&mut self, options: &Options) {
+        let re = if options.filter_input.use_regex {
+            match RegexBuilder::new(options.filter_input.input.as_str())
+                .case_insensitive(options.filter_input.case_insensitive)
+                .build()
+            {
+                Ok(re) => Some(re),
+                Err(err) => {
+                    println!("Regex error: {err:?}");
+                    None
+                }
+            }
+        } else {
+            None
+        };
         let mut content = self
             .entries
             .iter()
             .filter_map(|entry| {
                 if Self::entry_is_visible(entry, options) {
-                    Some(
-                        self.format_entry(
-                            entry,
-                            options
-                                .display_type
-                                .selected
-                                .unwrap_or(DisplayType::RelativePath),
-                        ),
-                    )
+                    let display_path = self.format_entry(
+                        entry,
+                        options
+                            .display_type
+                            .selected
+                            .unwrap_or(DisplayType::RelativePath),
+                    );
+                    match &re {
+                        Some(re) if re.is_match(display_path) => Some(display_path),
+                        None => {
+                            if options.filter_input.case_insensitive {
+                                if display_path
+                                    .to_lowercase()
+                                    .contains(&options.filter_input.input.to_lowercase())
+                                {
+                                    Some(display_path)
+                                } else {
+                                    None
+                                }
+                            } else {
+                                if display_path.contains(&options.filter_input.input) {
+                                    Some(display_path)
+                                } else {
+                                    None
+                                }
+                            }
+                        }
+                        _ => None,
+                    }
                 } else {
                     None
                 }

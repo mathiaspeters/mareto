@@ -36,6 +36,7 @@ pub enum Message {
 
     // Options updates
     FilterUpdated(String),
+    FilterCaseInsensitiveToggled,
     FilterRegexToggled,
     MinDepthToggled(bool),
     MinDepthLimitChanged(String),
@@ -91,10 +92,18 @@ impl Application for Mareto {
             // Options updates
             Message::FilterUpdated(filter) => {
                 self.options.filter_input.input = filter;
+                self.editor_state.show_filtered_entries(&self.options);
                 Command::none()
             }
             Message::FilterRegexToggled => {
                 self.options.filter_input.use_regex = !self.options.filter_input.use_regex;
+                self.editor_state.show_filtered_entries(&self.options);
+                Command::none()
+            }
+            Message::FilterCaseInsensitiveToggled => {
+                self.options.filter_input.case_insensitive =
+                    !self.options.filter_input.case_insensitive;
+                self.editor_state.show_filtered_entries(&self.options);
                 Command::none()
             }
             Message::MinDepthToggled(is_active) => {

@@ -7,4 +7,5 @@ edition = "2021"
 
 [dependencies]
 iced = "0.12"
+regex = "1.10"
 rfd = "0.14"

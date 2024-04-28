@@ -46,6 +46,7 @@ impl Default for Options {
 pub struct FilterInput {
     pub input: String,
     pub use_regex: bool,
+    pub case_insensitive: bool,
 }
 
 #[derive(Debug, Clone, Default)]

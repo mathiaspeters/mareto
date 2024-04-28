@@ -1708,6 +1708,7 @@ name = "mareto"
 version = "0.1.0"
 dependencies = [
  "iced",
+ "regex",
  "rfd",
 ]
 

@@ -17,6 +17,9 @@ pub fn options_view(options: &Options) -> Element<'_, Message> {
                     .on_input(Message::FilterUpdated)
                     .padding(12)
                     .width(Length::Fill),
+                button("Aa")
+                    .padding(12)
+                    .on_press(Message::FilterCaseInsensitiveToggled),
                 button(".*")
                     .padding(12)
                     .on_press(Message::FilterRegexToggled),
