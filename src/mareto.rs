@@ -111,6 +111,12 @@ impl Application for Mareto {
                 } else {
                     Some(limit.parse().expect("Only numbers should still be there"))
                 };
+                match (self.options.min_depth.limit, self.options.max_depth.limit) {
+                    (Some(min_limit), Some(max_limit)) if max_limit < min_limit => {
+                        self.options.max_depth.limit = Some(min_limit);
+                    }
+                    _ => {}
+                }
                 self.editor_state.show_filtered_entries(&self.options);
                 Command::none()
             }
@@ -126,6 +132,12 @@ impl Application for Mareto {
                 } else {
                     Some(limit.parse().expect("Only numbers should still be there"))
                 };
+                match (self.options.min_depth.limit, self.options.max_depth.limit) {
+                    (Some(min_limit), Some(max_limit)) if min_limit > max_limit => {
+                        self.options.min_depth.limit = Some(max_limit);
+                    }
+                    _ => {}
+                }
                 self.editor_state.show_filtered_entries(&self.options);
                 Command::none()
             }
