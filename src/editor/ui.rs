@@ -1,5 +1,3 @@
-use std::path::Path;
-
 use iced::widget::{button, column, row, text, text_editor, text_input, Space};
 use iced::{Element, Length};
 
@@ -8,11 +6,7 @@ use crate::mareto::Message;
 use super::EditorState;
 
 pub fn editor_view(state: &EditorState) -> Element<'_, Message> {
-    let folder = state
-        .open_folder
-        .as_deref()
-        .and_then(Path::to_str)
-        .unwrap_or("No folder open");
+    let folder = state.open_folder.as_deref().unwrap_or("No folder open");
     let s = String::new();
     column![
         text_editor(&state.contents)

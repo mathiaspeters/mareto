@@ -1,5 +1,3 @@
-use std::path::PathBuf;
-
 use iced::{
     executor,
     widget::{button, column, container, row, rule::Rule, text, text_editor},
@@ -32,7 +30,7 @@ impl From<std::io::Error> for Error {
 pub enum Message {
     // Top-level actions
     OpenFolder,
-    FolderSelected(Result<(PathBuf, Vec<FileSystemEntry>), Error>),
+    FolderSelected(Result<(String, Vec<FileSystemEntry>), Error>),
     ApplyChanges,
     //ApplyOutcome(Result<(), Error>),
 
@@ -158,6 +156,7 @@ impl Application for Mareto {
             }
             Message::DisplayTypeSelected(display_type) => {
                 self.options.display_type.selected = Some(display_type);
+                self.editor_state.show_filtered_entries(&self.options);
                 Command::none()
             }
             Message::RemoveFoldersToggled(is_active) => {
@@ -215,13 +214,13 @@ fn top_level_button(label: &str, on_press: Message) -> Element<'_, Message> {
         .into()
 }
 
-async fn pick_folder() -> Result<(PathBuf, Vec<FileSystemEntry>), Error> {
+async fn pick_folder() -> Result<(String, Vec<FileSystemEntry>), Error> {
     let path = rfd::AsyncFileDialog::new()
         .set_title("Choose a folder...")
         .pick_folder()
         .await
-        .ok_or(Error::DialogClosed)
-        .map(|fh| fh.path().to_owned())?;
+        .and_then(|fh| fh.path().to_str().map(|s| s.to_owned()))
+        .ok_or(Error::DialogClosed)?;
     let entries = get_entries_for_path(&path)?;
 
     Ok((path, entries))

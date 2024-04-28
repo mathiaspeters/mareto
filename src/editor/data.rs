@@ -1,15 +1,13 @@
-use std::path::PathBuf;
-
 use iced::widget::text_editor;
 
 use crate::{
     fs::{EntryType, FileSystemEntry},
-    options::{Options, SortingOption},
+    options::{DisplayType, Options, SortingOption},
 };
 
 #[derive(Debug, Default)]
 pub struct EditorState {
-    pub open_folder: Option<PathBuf>,
+    pub open_folder: Option<String>,
     pub entries: Vec<FileSystemEntry>,
 
     pub contents: text_editor::Content,
@@ -23,7 +21,15 @@ impl EditorState {
             .iter()
             .filter_map(|entry| {
                 if Self::entry_is_visible(entry, options) {
-                    Some(entry.path.as_str())
+                    Some(
+                        self.format_entry(
+                            entry,
+                            options
+                                .display_type
+                                .selected
+                                .unwrap_or(DisplayType::RelativePath),
+                        ),
+                    )
                 } else {
                     None
                 }
@@ -52,6 +58,31 @@ impl EditorState {
             return false;
         }
         true
+    }
+
+    fn format_entry<'a>(
+        &'_ self,
+        entry: &'a FileSystemEntry,
+        display_type: DisplayType,
+    ) -> &'a str {
+        match display_type {
+            DisplayType::AbsolutePath => &entry.path,
+            DisplayType::RelativePath => {
+                let root = self
+                    .open_folder
+                    .as_ref()
+                    .expect("Folder must be set for this function to be called");
+                &entry
+                    .path
+                    .strip_prefix(root)
+                    .expect("All available entries must start with the root")[1..]
+            }
+            DisplayType::JustName => entry
+                .path
+                .split('/')
+                .last()
+                .expect("Entries cannot be empty and must have at least one path separator"),
+        }
     }
 }
 

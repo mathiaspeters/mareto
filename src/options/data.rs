@@ -95,4 +95,4 @@ macro_rules! drop_down_enum {
 }
 
 drop_down_enum!(SortingOption, Ascending, Descending);
-drop_down_enum!(DisplayType, AbsolutePath, RelativePath, JustFileName);
+drop_down_enum!(DisplayType, AbsolutePath, RelativePath, JustName);
