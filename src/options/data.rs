@@ -36,7 +36,7 @@ impl Default for Options {
             preview_changes: true,
             theme: DropDownState {
                 selected: Some(Theme::Light),
-                options: combo_box::State::new(ALL_THEMES.to_vec()),
+                options: combo_box::State::new(Theme::ALL.to_vec()),
             },
         }
     }
@@ -60,30 +60,6 @@ pub struct DropDownState<T> {
     pub selected: Option<T>,
     pub options: combo_box::State<T>,
 }
-
-const ALL_THEMES: [Theme; 21] = [
-    Theme::Light,
-    Theme::Dark,
-    Theme::Dracula,
-    Theme::Nord,
-    Theme::SolarizedLight,
-    Theme::SolarizedDark,
-    Theme::GruvboxLight,
-    Theme::GruvboxDark,
-    Theme::CatppuccinLatte,
-    Theme::CatppuccinFrappe,
-    Theme::CatppuccinMacchiato,
-    Theme::CatppuccinMocha,
-    Theme::TokyoNight,
-    Theme::TokyoNightStorm,
-    Theme::TokyoNightLight,
-    Theme::KanagawaWave,
-    Theme::KanagawaDragon,
-    Theme::KanagawaLotus,
-    Theme::Moonfly,
-    Theme::Nightfly,
-    Theme::Oxocarbon,
-];
 
 macro_rules! drop_down_enum {
     (
