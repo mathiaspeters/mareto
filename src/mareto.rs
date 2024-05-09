@@ -75,6 +75,14 @@ impl Application for Mareto {
         "Mareto".to_owned()
     }
 
+    fn theme(&self) -> Theme {
+        self.options
+            .theme
+            .selected
+            .clone()
+            .unwrap_or(Theme::default())
+    }
+
     fn update(&mut self, message: Self::Message) -> iced::Command<Self::Message> {
         match message {
             // Top-level actions
