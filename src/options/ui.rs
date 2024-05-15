@@ -4,7 +4,7 @@ use iced::{
         button, column, combo_box, container, row, rule::Rule, scrollable, text, text_input,
         toggler,
     },
-    Element, Length, Padding,
+    Border, Element, Length, Padding, Theme,
 };
 
 use super::{data::Options, DepthLimit};
@@ -17,12 +17,16 @@ pub fn options_view(options: &Options) -> Element<'_, Message> {
                     .on_input(Message::FilterUpdated)
                     .padding(12)
                     .width(Length::Fill),
-                button("Aa")
-                    .padding(12)
-                    .on_press(Message::FilterCaseInsensitiveToggled),
-                button(".*")
-                    .padding(12)
-                    .on_press(Message::FilterRegexToggled),
+                toggle_button(
+                    "Aa",
+                    options.filter_input.case_insensitive,
+                    Message::FilterCaseInsensitiveToggled,
+                ),
+                toggle_button(
+                    ".*",
+                    !options.filter_input.use_regex,
+                    Message::FilterRegexToggled,
+                ),
             ],
             Rule::horizontal(1),
             depth_control(
@@ -115,4 +119,43 @@ where
     ]
     .spacing(8)
     .into()
+}
+
+fn toggle_button<'a>(
+    label: &'a str,
+    active: bool,
+    on_press: Message,
+) -> iced::widget::Button<'a, Message> {
+    let mut button = button(label).padding(12).on_press(on_press);
+    if !active {
+        button = button.style(InactiveToggleButton);
+    }
+    button
+}
+
+struct InactiveToggleButton;
+
+impl button::StyleSheet for InactiveToggleButton {
+    type Style = Theme;
+
+    fn active(&self, style: &Self::Style) -> button::Appearance {
+        let mut border_color = style.palette().text;
+        border_color.a = 0.2;
+        button::Appearance {
+            background: Some(iced::Background::Color(style.palette().background)),
+            text_color: style.palette().text,
+            border: Border {
+                color: border_color,
+                width: 1.0,
+                ..Default::default()
+            },
+            ..Default::default()
+        }
+    }
+}
+
+impl Into<iced::theme::Button> for InactiveToggleButton {
+    fn into(self) -> iced::theme::Button {
+        iced::theme::Button::Custom(Box::new(self))
+    }
 }
