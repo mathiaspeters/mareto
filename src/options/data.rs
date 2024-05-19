@@ -1,6 +1,6 @@
 use std::fmt::Display;
 
-use iced::{widget::combo_box, Theme};
+use iced::Theme;
 
 #[derive(Debug, Clone)]
 pub struct Options {
@@ -26,17 +26,17 @@ impl Default for Options {
             show_folders: true,
             sorting: DropDownState {
                 selected: Some(SortingOption::Ascending),
-                options: combo_box::State::new(SortingOption::variants()),
+                options: SortingOption::variants(),
             },
             display_type: DropDownState {
                 selected: Some(DisplayType::RelativePath),
-                options: combo_box::State::new(DisplayType::variants()),
+                options: DisplayType::variants(),
             },
             remove_empty: false,
             preview_changes: true,
             theme: DropDownState {
                 selected: Some(Theme::Light),
-                options: combo_box::State::new(Theme::ALL.to_vec()),
+                options: Theme::ALL.to_vec(),
             },
         }
     }
@@ -58,7 +58,7 @@ pub struct DepthLimit {
 #[derive(Debug, Clone)]
 pub struct DropDownState<T> {
     pub selected: Option<T>,
-    pub options: combo_box::State<T>,
+    pub options: Vec<T>,
 }
 
 macro_rules! drop_down_enum {
@@ -68,7 +68,7 @@ macro_rules! drop_down_enum {
         ,
         *
     ) => {
-        #[derive(Debug, Copy, Clone)]
+        #[derive(Debug, Copy, Clone, PartialEq, Eq)]
         pub enum $name {
             $(
                 $variant,

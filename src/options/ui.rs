@@ -1,7 +1,7 @@
 use crate::mareto::Message;
 use iced::{
     widget::{
-        button, column, combo_box, container, row, rule::Rule, scrollable, text, text_input,
+        button, column, container, pick_list, row, rule::Rule, scrollable, text, text_input,
         toggler,
     },
     Border, Element, Length, Padding, Theme,
@@ -53,19 +53,19 @@ pub fn options_view(options: &Options) -> Element<'_, Message> {
                 Message::ShowFoldersToggled
             ),
             Rule::horizontal(1),
-            combo_box(
-                &options.sorting.options,
-                "Sort order",
-                options.sorting.selected.as_ref(),
+            pick_list(
+                &options.sorting.options[..],
+                options.sorting.selected,
                 Message::SortOrderSelected
             )
+            .width(Length::Fill)
             .padding(12),
-            combo_box(
-                &options.display_type.options,
-                "Display type",
-                options.display_type.selected.as_ref(),
+            pick_list(
+                &options.display_type.options[..],
+                options.display_type.selected,
                 Message::DisplayTypeSelected
             )
+            .width(Length::Fill)
             .padding(12),
             Rule::horizontal(1),
             toggler(
@@ -79,12 +79,12 @@ pub fn options_view(options: &Options) -> Element<'_, Message> {
                 Message::PreviewChangesToggled
             ),
             Rule::horizontal(1),
-            combo_box(
-                &options.theme.options,
-                "App theme",
+            pick_list(
+                &options.theme.options[..],
                 options.theme.selected.as_ref(),
                 Message::ThemeSelected
             )
+            .width(Length::Fill)
             .padding(12),
         ]
         .spacing(12)
