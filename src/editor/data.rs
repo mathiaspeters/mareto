@@ -70,12 +70,13 @@ impl EditorState {
                 }
             })
             .collect::<Vec<_>>();
-        content.sort_unstable_by(|e1, e2| match options.sorting.selected {
-            Some(SortingOption::Descending) => {
-                e2.to_ascii_lowercase().cmp(&e1.to_ascii_lowercase())
-            }
-            _ => e1.to_ascii_lowercase().cmp(&e2.to_ascii_lowercase()),
-        });
+        match options.sorting.selected {
+            Some(SortingOption::SortAscending) => content
+                .sort_unstable_by(|e1, e2| e1.to_ascii_lowercase().cmp(&e2.to_ascii_lowercase())),
+            Some(SortingOption::SortDescending) => content
+                .sort_unstable_by(|e1, e2| e2.to_ascii_lowercase().cmp(&e1.to_ascii_lowercase())),
+            _ => {}
+        }
         let content = content.join("\n");
         self.contents = text_editor::Content::with_text(&content);
     }

@@ -25,7 +25,7 @@ impl Default for Options {
             show_files: true,
             show_folders: true,
             sorting: DropDownState {
-                selected: Some(SortingOption::Ascending),
+                selected: Some(SortingOption::NoSorting),
                 options: SortingOption::variants(),
             },
             display_type: DropDownState {
@@ -95,5 +95,5 @@ macro_rules! drop_down_enum {
     };
 }
 
-drop_down_enum!(SortingOption, Ascending, Descending);
+drop_down_enum!(SortingOption, NoSorting, SortAscending, SortDescending);
 drop_down_enum!(DisplayType, AbsolutePath, RelativePath, JustName);
