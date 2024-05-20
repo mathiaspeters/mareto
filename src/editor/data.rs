@@ -44,7 +44,7 @@ impl EditorState {
                             .unwrap_or(DisplayType::RelativePath),
                     );
                     match &re {
-                        Some(re) if re.is_match(display_path) => Some(display_path),
+                        Some(re) if re.is_match(&display_path) => Some(display_path),
                         None => {
                             if options.filter_input.case_insensitive {
                                 if display_path
@@ -95,28 +95,22 @@ impl EditorState {
         true
     }
 
-    fn format_entry<'a>(
-        &'_ self,
-        entry: &'a FileSystemEntry,
-        display_type: DisplayType,
-    ) -> &'a str {
+    fn format_entry<'a>(&'_ self, entry: &'a FileSystemEntry, display_type: DisplayType) -> String {
         match display_type {
-            DisplayType::AbsolutePath => &entry.path,
-            DisplayType::RelativePath => {
-                let root = self
-                    .open_folder
+            DisplayType::AbsolutePath => format!(
+                "{}{}",
+                self.open_folder
                     .as_ref()
-                    .expect("Folder must be set for this function to be called");
-                &entry
-                    .path
-                    .strip_prefix(root)
-                    .expect("All available entries must start with the root")[1..]
-            }
+                    .expect("Folder must be set for this function to be called"),
+                &entry.path
+            ),
+            DisplayType::RelativePath => entry.path.to_owned(),
             DisplayType::JustName => entry
                 .path
                 .split('/')
                 .last()
-                .expect("Entries cannot be empty and must have at least one path separator"),
+                .expect("Entries cannot be empty and must have at least one path separator")
+                .to_owned(),
         }
     }
 }
