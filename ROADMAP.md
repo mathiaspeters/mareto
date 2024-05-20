@@ -1,8 +1,8 @@
 # Next up
 - [x] Free-text filtering with option to toggle regex and case insensitivity
-- [ ] Make the filter regex and case insensitive buttons change color depending on if they are active or not (standard button color if active, background color if not active)
+- [x] Make the filter regex and case insensitive buttons change color depending on if they are active or not (standard button color if active, background color if not active)
 - [x] Theme selection
-- [ ] Refactor data model to make apply changes possible
+- [x] Refactor data model to make apply changes possible
 
 # Later
 - [ ] Performance
