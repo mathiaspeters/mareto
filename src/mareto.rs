@@ -100,11 +100,13 @@ impl Application for Mareto {
             // Options updates
             Message::FilterUpdated(filter) => {
                 self.options.filter_input.input = filter;
+                self.options.filter_input.update_regex();
                 self.editor_state.show_filtered_entries(&self.options);
                 Command::none()
             }
             Message::FilterRegexToggled => {
                 self.options.filter_input.use_regex = !self.options.filter_input.use_regex;
+                self.options.filter_input.update_regex();
                 self.editor_state.show_filtered_entries(&self.options);
                 Command::none()
             }

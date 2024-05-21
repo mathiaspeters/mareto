@@ -10,23 +10,30 @@ use iced::{
 use super::{data::Options, DepthLimit};
 
 pub fn options_view(options: &Options) -> Element<'_, Message> {
+    let regex_error_text = match &options.filter_input.regex {
+        Some(Err((_, text))) => text,
+        _ => "",
+    };
     container(scrollable(
         column![
-            row![
-                text_input("Filter input", &options.filter_input.input)
-                    .on_input(Message::FilterUpdated)
-                    .padding(12)
-                    .width(Length::Fill),
-                toggle_button(
-                    "Aa",
-                    options.filter_input.case_insensitive,
-                    Message::FilterCaseInsensitiveToggled,
-                ),
-                toggle_button(
-                    ".*",
-                    !options.filter_input.use_regex,
-                    Message::FilterRegexToggled,
-                ),
+            column![
+                row![
+                    text_input("Filter input", &options.filter_input.input)
+                        .on_input(Message::FilterUpdated)
+                        .padding(12)
+                        .width(Length::Fill),
+                    toggle_button(
+                        "Aa",
+                        options.filter_input.case_insensitive,
+                        Message::FilterCaseInsensitiveToggled,
+                    ),
+                    toggle_button(
+                        ".*",
+                        !options.filter_input.use_regex,
+                        Message::FilterRegexToggled,
+                    ),
+                ],
+                text(regex_error_text),
             ],
             Rule::horizontal(1),
             depth_control(

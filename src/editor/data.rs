@@ -1,5 +1,4 @@
 use iced::widget::text_editor;
-use regex::RegexBuilder;
 
 use crate::{
     fs::{EntryType, FileSystemEntry},
@@ -17,19 +16,10 @@ pub struct EditorState {
 
 impl EditorState {
     pub fn show_filtered_entries(&mut self, options: &Options) {
-        let re = if options.filter_input.use_regex {
-            match RegexBuilder::new(options.filter_input.input.as_str())
-                .case_insensitive(options.filter_input.case_insensitive)
-                .build()
-            {
-                Ok(re) => Some(re),
-                Err(err) => {
-                    println!("Regex error: {err:?}");
-                    None
-                }
-            }
-        } else {
-            None
+        let re = match &options.filter_input.regex {
+            Some(Ok(re)) => Some(re),
+            Some(Err((re, _))) => re.as_ref(),
+            _ => None,
         };
         let mut content = self
             .entries

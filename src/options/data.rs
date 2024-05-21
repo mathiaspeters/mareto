@@ -1,6 +1,7 @@
 use std::fmt::Display;
 
 use iced::Theme;
+use regex::{Regex, RegexBuilder};
 
 #[derive(Debug, Clone)]
 pub struct Options {
@@ -45,8 +46,40 @@ impl Default for Options {
 #[derive(Debug, Clone, Default)]
 pub struct FilterInput {
     pub input: String,
+    pub regex: Option<Result<Regex, (Option<Regex>, String)>>,
     pub use_regex: bool,
     pub case_insensitive: bool,
+}
+
+impl FilterInput {
+    pub fn update_regex(&mut self) {
+        match (self.input.is_empty(), self.use_regex) {
+            (false, true) => {
+                self.regex = match RegexBuilder::new(self.input.as_str())
+                    .case_insensitive(self.case_insensitive)
+                    .build()
+                {
+                    Ok(re) => Some(Ok(re)),
+                    Err(err) => {
+                        let mut previous_regex = None;
+                        std::mem::swap(&mut previous_regex, &mut self.regex);
+                        let previous_regex = match previous_regex {
+                            Some(Ok(re)) => Some(re),
+                            Some(Err((re, _))) => re,
+                            _ => None,
+                        };
+                        let error_message = match err {
+                            regex::Error::Syntax(s) => s,
+                            regex::Error::CompiledTooBig(_) => "Regex too big".to_owned(),
+                            _ => unimplemented!(),
+                        };
+                        Some(Err((previous_regex, error_message)))
+                    }
+                }
+            }
+            _ => self.regex = None,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Default)]
