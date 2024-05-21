@@ -4,7 +4,7 @@ use iced::{
         button, column, container, pick_list, row, rule::Rule, scrollable, text, text_input,
         toggler,
     },
-    Border, Element, Length, Padding, Theme,
+    Border, Color, Element, Length, Padding, Theme,
 };
 
 use super::{data::Options, DepthLimit};
@@ -33,7 +33,7 @@ pub fn options_view(options: &Options) -> Element<'_, Message> {
                         Message::FilterRegexToggled,
                     ),
                 ],
-                text(regex_error_text),
+                text(regex_error_text).style(ErrorTextColor),
             ],
             Rule::horizontal(1),
             depth_control(
@@ -164,5 +164,13 @@ impl button::StyleSheet for InactiveToggleButton {
 impl Into<iced::theme::Button> for InactiveToggleButton {
     fn into(self) -> iced::theme::Button {
         iced::theme::Button::Custom(Box::new(self))
+    }
+}
+
+struct ErrorTextColor;
+
+impl Into<iced::theme::Text> for ErrorTextColor {
+    fn into(self) -> iced::theme::Text {
+        iced::theme::Text::Color(Color::from_rgb(0.9, 0.2, 0.2))
     }
 }

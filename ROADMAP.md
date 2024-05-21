@@ -18,7 +18,7 @@
     - [ ] Show error if one occurred during apply changes
 - [ ] Create config file to persist user settings and potentially current state 
 - [ ] Create help page to explain how it's working
-- [ ] Show invalid regex error to the user
+- [x] Show invalid regex error to the user
 
 # Future
 - [ ] Find and replace
