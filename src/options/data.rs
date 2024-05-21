@@ -48,7 +48,7 @@ pub struct FilterInput {
     pub input: String,
     pub regex: Option<Result<Regex, (Option<Regex>, String)>>,
     pub use_regex: bool,
-    pub case_insensitive: bool,
+    pub case_sensitive: bool,
 }
 
 impl FilterInput {
@@ -56,7 +56,7 @@ impl FilterInput {
         match (self.input.is_empty(), self.use_regex) {
             (false, true) => {
                 self.regex = match RegexBuilder::new(self.input.as_str())
-                    .case_insensitive(self.case_insensitive)
+                    .case_insensitive(!self.case_sensitive)
                     .build()
                 {
                     Ok(re) => Some(Ok(re)),

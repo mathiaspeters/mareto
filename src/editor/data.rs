@@ -36,17 +36,17 @@ impl EditorState {
                     match &re {
                         Some(re) if re.is_match(&display_path) => Some(display_path),
                         None => {
-                            if options.filter_input.case_insensitive {
-                                if display_path
-                                    .to_lowercase()
-                                    .contains(&options.filter_input.input.to_lowercase())
-                                {
+                            if options.filter_input.case_sensitive {
+                                if display_path.contains(&options.filter_input.input) {
                                     Some(display_path)
                                 } else {
                                     None
                                 }
                             } else {
-                                if display_path.contains(&options.filter_input.input) {
+                                if display_path
+                                    .to_lowercase()
+                                    .contains(&options.filter_input.input.to_lowercase())
+                                {
                                     Some(display_path)
                                 } else {
                                     None

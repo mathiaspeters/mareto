@@ -24,12 +24,12 @@ pub fn options_view(options: &Options) -> Element<'_, Message> {
                         .width(Length::Fill),
                     toggle_button(
                         "Aa",
-                        options.filter_input.case_insensitive,
-                        Message::FilterCaseInsensitiveToggled,
+                        options.filter_input.case_sensitive,
+                        Message::FilterCaseSensitivityToggled,
                     ),
                     toggle_button(
                         ".*",
-                        !options.filter_input.use_regex,
+                        options.filter_input.use_regex,
                         Message::FilterRegexToggled,
                     ),
                 ],
