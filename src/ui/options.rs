@@ -1,15 +1,17 @@
-use crate::mareto::Message;
+use crate::{
+    mareto::Message,
+    state::{DepthLimit, Options},
+};
 use iced::{
     widget::{
-        button, column, container, pick_list, row, rule::Rule, scrollable, text, text_input,
-        toggler,
+        column, container, pick_list, row, rule::Rule, scrollable, text, text_input, toggler,
     },
-    Border, Color, Element, Length, Padding, Theme,
+    Element, Length, Padding,
 };
 
-use super::{data::Options, DepthLimit};
+use super::{components::toggle_button, themes::ErrorTextColor};
 
-pub fn options_view(options: &Options) -> Element<'_, Message> {
+pub fn options(options: &Options) -> Element<'_, Message> {
     let regex_error_text = match &options.filter_input.regex {
         Some(Err((_, text))) => text,
         _ => "",
@@ -126,51 +128,4 @@ where
     ]
     .spacing(8)
     .into()
-}
-
-fn toggle_button<'a>(
-    label: &'a str,
-    active: bool,
-    on_press: Message,
-) -> iced::widget::Button<'a, Message> {
-    let mut button = button(label).padding(12).on_press(on_press);
-    if !active {
-        button = button.style(InactiveToggleButton);
-    }
-    button
-}
-
-struct InactiveToggleButton;
-
-impl button::StyleSheet for InactiveToggleButton {
-    type Style = Theme;
-
-    fn active(&self, style: &Self::Style) -> button::Appearance {
-        let mut border_color = style.palette().text;
-        border_color.a = 0.2;
-        button::Appearance {
-            background: Some(iced::Background::Color(style.palette().background)),
-            text_color: style.palette().text,
-            border: Border {
-                color: border_color,
-                width: 1.0,
-                ..Default::default()
-            },
-            ..Default::default()
-        }
-    }
-}
-
-impl Into<iced::theme::Button> for InactiveToggleButton {
-    fn into(self) -> iced::theme::Button {
-        iced::theme::Button::Custom(Box::new(self))
-    }
-}
-
-struct ErrorTextColor;
-
-impl Into<iced::theme::Text> for ErrorTextColor {
-    fn into(self) -> iced::theme::Text {
-        iced::theme::Text::Color(Color::from_rgb(0.9, 0.2, 0.2))
-    }
 }

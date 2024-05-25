@@ -1,17 +1,13 @@
 use iced::{
     executor,
-    widget::{button, column, container, row, rule::Rule, text, text_editor},
-    Application, Command, Element, Length, Theme,
+    widget::{column, container, row, rule::Rule, text, text_editor},
+    Application, Command, Element, Theme,
 };
 
-use crate::{
-    editor::{editor_view, EditorState},
-    fs::get_entries_for_path,
-    options::SortingOption,
-};
+use crate::{fs::get_entries_for_path, state::EditorState, ui};
 use crate::{
     fs::FileSystemEntry,
-    options::{options_view, DisplayType, Options},
+    state::{DisplayType, Options, SortingOption},
 };
 
 #[derive(Debug, Clone)]
@@ -201,37 +197,31 @@ impl Application for Mareto {
     }
 
     fn view(&self) -> Element<'_, Self::Message, Self::Theme, iced::Renderer> {
-        let left_pane = {
-            let open_folder_button = top_level_button("Open folder", Message::OpenFolder);
-            let apply_changes_button = top_level_button("Apply changes", Message::ApplyChanges);
+        let left_pane = column![
+            ui::top_level_actions(),
+            Rule::horizontal(1),
+            text("Options"),
+            ui::options(&self.options),
+        ]
+        .width(400)
+        .spacing(12);
 
-            let options = options_view(&self.options);
-
-            column![
-                open_folder_button,
-                apply_changes_button,
-                Rule::horizontal(1),
-                text("Options"),
-                options
-            ]
-            .width(400)
-            .spacing(12)
-        };
-
-        let right_pane = editor_view(&self.editor_state);
+        let right_pane = column![
+            ui::editor(&self.editor_state),
+            ui::find_and_replace(
+                self.editor_state
+                    .open_folder
+                    .as_ref()
+                    .map(|s| s.as_str())
+                    .unwrap_or("")
+            ),
+        ]
+        .spacing(12);
 
         container(row![left_pane, right_pane].spacing(12))
             .padding(12)
             .into()
     }
-}
-
-fn top_level_button(label: &str, on_press: Message) -> Element<'_, Message> {
-    button(label)
-        .on_press(on_press)
-        .width(Length::Fill)
-        .padding(12)
-        .into()
 }
 
 async fn pick_folder() -> Result<(String, Vec<FileSystemEntry>), Error> {

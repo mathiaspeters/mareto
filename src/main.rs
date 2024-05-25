@@ -1,7 +1,7 @@
-mod editor;
 mod fs;
 mod mareto;
-mod options;
+mod state;
+mod ui;
 
 use iced::{Application, Settings, Size};
 

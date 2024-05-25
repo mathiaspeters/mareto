@@ -1,9 +1,8 @@
 use iced::widget::text_editor;
 
-use crate::{
-    fs::{EntryType, FileSystemEntry},
-    options::{DisplayType, Options, SortingOption},
-};
+use crate::fs::{EntryType, FileSystemEntry};
+
+use super::{DisplayType, Options, SortingOption};
 
 #[derive(Debug, Default)]
 pub struct EditorState {
