@@ -21,16 +21,16 @@ impl button::StyleSheet for InactiveToggleButton {
     }
 }
 
-impl Into<iced::theme::Button> for InactiveToggleButton {
-    fn into(self) -> iced::theme::Button {
-        iced::theme::Button::Custom(Box::new(self))
+impl From<InactiveToggleButton> for iced::theme::Button {
+    fn from(val: InactiveToggleButton) -> Self {
+        iced::theme::Button::Custom(Box::new(val))
     }
 }
 
 pub struct ErrorTextColor;
 
-impl Into<iced::theme::Text> for ErrorTextColor {
-    fn into(self) -> iced::theme::Text {
+impl From<ErrorTextColor> for iced::theme::Text {
+    fn from(_val: ErrorTextColor) -> Self {
         iced::theme::Text::Color(Color::from_rgb(0.9, 0.2, 0.2))
     }
 }

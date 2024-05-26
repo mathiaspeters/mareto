@@ -77,11 +77,7 @@ impl Application for Mareto {
     }
 
     fn theme(&self) -> Theme {
-        self.options
-            .theme
-            .selected
-            .clone()
-            .unwrap_or(Theme::default())
+        self.options.theme.selected.clone().unwrap_or_default()
     }
 
     fn update(&mut self, message: Self::Message) -> iced::Command<Self::Message> {

@@ -55,7 +55,7 @@ impl<'a> PathFinder<'a> {
                     };
                     if let Some(entry_type) = ft {
                         let og_path = path
-                            .strip_prefix(&self.initial_path)
+                            .strip_prefix(self.initial_path)
                             .expect("All paths found need to be under the initial path")
                             .to_owned();
                         let path = og_path.clone();

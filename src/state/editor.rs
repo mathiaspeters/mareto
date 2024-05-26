@@ -58,10 +58,12 @@ impl EditorState {
             })
             .collect::<Vec<_>>();
         match options.sorting.selected {
-            Some(SortingOption::SortAscending) => content
-                .sort_unstable_by(|e1, e2| e1.to_ascii_lowercase().cmp(&e2.to_ascii_lowercase())),
-            Some(SortingOption::SortDescending) => content
-                .sort_unstable_by(|e1, e2| e2.to_ascii_lowercase().cmp(&e1.to_ascii_lowercase())),
+            Some(SortingOption::SortAscending) => {
+                content.sort_unstable_by_key(|e| e.to_ascii_lowercase())
+            }
+            Some(SortingOption::SortDescending) => {
+                content.sort_unstable_by_key(|e| std::cmp::Reverse(e.to_ascii_lowercase()))
+            }
             _ => {}
         }
         let content = content.join("\n");
@@ -95,7 +97,7 @@ impl EditorState {
         true
     }
 
-    fn format_entry<'a>(&'_ self, entry: &'a FileSystemEntry, display_type: DisplayType) -> String {
+    fn format_entry(&'_ self, entry: &FileSystemEntry, display_type: DisplayType) -> String {
         match display_type {
             DisplayType::AbsolutePath => format!(
                 "{}{}",
