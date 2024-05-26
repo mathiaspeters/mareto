@@ -1,6 +1,6 @@
 use crate::{
     mareto::Message,
-    state::{DepthLimit, Options},
+    state::{DepthLimit, FilterOptions, Options},
 };
 use iced::{
     widget::{
@@ -11,8 +11,11 @@ use iced::{
 
 use super::{components::toggle_button, themes::ErrorTextColor};
 
-pub fn options(options: &Options) -> Element<'_, Message> {
-    let regex_error_text = match &options.filter_input.regex {
+pub fn options<'a>(
+    options: &'a Options,
+    filter_options: &'a FilterOptions,
+) -> Element<'a, Message> {
+    let regex_error_text = match &filter_options.filter_input.state.regex {
         Some(Err((_, text))) => text,
         _ => "",
     };
@@ -20,18 +23,18 @@ pub fn options(options: &Options) -> Element<'_, Message> {
         column![
             column![
                 row![
-                    text_input("Filter input", &options.filter_input.input)
+                    text_input("Filter input", &filter_options.filter_input.state.input)
                         .on_input(Message::FilterUpdated)
                         .padding(12)
                         .width(Length::Fill),
                     toggle_button(
                         "Aa",
-                        options.filter_input.case_sensitive,
+                        filter_options.filter_input.state.case_sensitive,
                         Message::FilterCaseSensitivityToggled,
                     ),
                     toggle_button(
                         ".*",
-                        options.filter_input.use_regex,
+                        filter_options.filter_input.state.use_regex,
                         Message::FilterRegexToggled,
                     ),
                 ],
@@ -40,25 +43,25 @@ pub fn options(options: &Options) -> Element<'_, Message> {
             Rule::horizontal(1),
             depth_control(
                 "Limit minimum depth".to_owned(),
-                &options.min_depth,
+                &filter_options.min_depth.state,
                 Message::MinDepthToggled,
                 Message::MinDepthLimitChanged
             ),
             depth_control(
                 "Limit maximum depth".to_owned(),
-                &options.max_depth,
+                &filter_options.max_depth.state,
                 Message::MaxDepthToggled,
                 Message::MaxDepthLimitChanged
             ),
             Rule::horizontal(1),
             toggler(
                 Some("Show files".to_owned()),
-                options.show_files,
+                filter_options.show_files.state,
                 Message::ShowFilesToggled
             ),
             toggler(
                 Some("Show folders".to_owned()),
-                options.show_folders,
+                filter_options.show_folders.state,
                 Message::ShowFoldersToggled
             ),
             Rule::horizontal(1),

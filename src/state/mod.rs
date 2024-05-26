@@ -1,5 +1,7 @@
 mod editor;
+mod filters;
 mod options;
 
-pub use self::editor::*;
-pub use self::options::*;
+pub use editor::*;
+pub use filters::*;
+pub use options::*;

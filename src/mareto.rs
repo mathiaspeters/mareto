@@ -4,7 +4,11 @@ use iced::{
     Application, Command, Element, Theme,
 };
 
-use crate::{fs::get_entries_for_path, state::EditorState, ui};
+use crate::{
+    fs::get_entries_for_path,
+    state::{EditorState, FilterOptions},
+    ui,
+};
 use crate::{
     fs::FileSystemEntry,
     state::{DisplayType, Options, SortingOption},
@@ -52,6 +56,7 @@ pub enum Message {
 
 #[derive(Debug, Default)]
 pub struct Mareto {
+    filters: FilterOptions,
     options: Options,
     editor_state: EditorState,
 }
@@ -86,7 +91,8 @@ impl Application for Mareto {
             Message::FolderSelected(Ok((path, entries))) => {
                 self.editor_state.open_folder = Some(path);
                 self.editor_state.entries = entries;
-                self.editor_state.show_filtered_entries(&self.options);
+                self.editor_state
+                    .show_filtered_entries(&self.options, &self.filters);
                 Command::none()
             }
             Message::FolderSelected(_) => Command::none(),
@@ -95,84 +101,102 @@ impl Application for Mareto {
 
             // Options updates
             Message::FilterUpdated(filter) => {
-                self.options.filter_input.input = filter;
-                self.options.filter_input.update_regex();
-                self.editor_state.show_filtered_entries(&self.options);
+                self.filters.filter_input.state.input = filter;
+                self.filters.filter_input.state.update_regex();
+                self.editor_state
+                    .show_filtered_entries(&self.options, &self.filters);
                 Command::none()
             }
             Message::FilterRegexToggled => {
-                self.options.filter_input.use_regex = !self.options.filter_input.use_regex;
-                self.options.filter_input.update_regex();
-                self.editor_state.show_filtered_entries(&self.options);
+                self.filters.filter_input.state.use_regex =
+                    !self.filters.filter_input.state.use_regex;
+                self.filters.filter_input.state.update_regex();
+                self.editor_state
+                    .show_filtered_entries(&self.options, &self.filters);
                 Command::none()
             }
             Message::FilterCaseSensitivityToggled => {
-                self.options.filter_input.case_sensitive =
-                    !self.options.filter_input.case_sensitive;
-                self.options.filter_input.update_regex();
-                self.editor_state.show_filtered_entries(&self.options);
+                self.filters.filter_input.state.case_sensitive =
+                    !self.filters.filter_input.state.case_sensitive;
+                self.filters.filter_input.state.update_regex();
+                self.editor_state
+                    .show_filtered_entries(&self.options, &self.filters);
                 Command::none()
             }
             Message::MinDepthToggled(is_active) => {
-                self.options.min_depth.is_active = is_active;
-                self.editor_state.show_filtered_entries(&self.options);
+                self.filters.min_depth.state.is_active = is_active;
+                self.editor_state
+                    .show_filtered_entries(&self.options, &self.filters);
                 Command::none()
             }
             Message::MinDepthLimitChanged(mut limit) => {
                 limit.retain(|c| c.is_numeric());
-                self.options.min_depth.limit = if limit.is_empty() {
+                self.filters.min_depth.state.limit = if limit.is_empty() {
                     None
                 } else {
                     Some(limit.parse().expect("Only numbers should still be there"))
                 };
-                match (self.options.min_depth.limit, self.options.max_depth.limit) {
+                match (
+                    self.filters.min_depth.state.limit,
+                    self.filters.max_depth.state.limit,
+                ) {
                     (Some(min_limit), Some(max_limit)) if max_limit < min_limit => {
-                        self.options.max_depth.limit = Some(min_limit);
+                        self.filters.max_depth.state.limit = Some(min_limit);
                     }
                     _ => {}
                 }
-                self.editor_state.show_filtered_entries(&self.options);
+                self.editor_state
+                    .show_filtered_entries(&self.options, &self.filters);
                 Command::none()
             }
             Message::MaxDepthToggled(is_active) => {
-                self.options.max_depth.is_active = is_active;
-                self.editor_state.show_filtered_entries(&self.options);
+                self.filters.max_depth.state.is_active = is_active;
+                self.editor_state
+                    .show_filtered_entries(&self.options, &self.filters);
                 Command::none()
             }
             Message::MaxDepthLimitChanged(mut limit) => {
                 limit.retain(|c| c.is_numeric());
-                self.options.max_depth.limit = if limit.is_empty() {
+                self.filters.max_depth.state.limit = if limit.is_empty() {
                     None
                 } else {
                     Some(limit.parse().expect("Only numbers should still be there"))
                 };
-                match (self.options.min_depth.limit, self.options.max_depth.limit) {
+                match (
+                    self.filters.min_depth.state.limit,
+                    self.filters.max_depth.state.limit,
+                ) {
                     (Some(min_limit), Some(max_limit)) if min_limit > max_limit => {
-                        self.options.min_depth.limit = Some(max_limit);
+                        self.filters.min_depth.state.limit = Some(max_limit);
                     }
                     _ => {}
                 }
-                self.editor_state.show_filtered_entries(&self.options);
+                self.editor_state
+                    .show_filtered_entries(&self.options, &self.filters);
                 Command::none()
             }
             Message::ShowFilesToggled(is_active) => {
-                self.options.show_files = is_active;
-                self.editor_state.show_filtered_entries(&self.options);
+                self.filters.show_files.state = is_active;
+                self.editor_state
+                    .show_filtered_entries(&self.options, &self.filters);
                 Command::none()
             }
             Message::ShowFoldersToggled(is_active) => {
-                self.options.show_folders = is_active;
-                self.editor_state.show_filtered_entries(&self.options);
+                self.filters.show_folders.state = is_active;
+                self.editor_state
+                    .show_filtered_entries(&self.options, &self.filters);
                 Command::none()
             }
             Message::SortOrderSelected(order) => {
                 self.options.sorting.selected = Some(order);
-                self.editor_state.show_filtered_entries(&self.options);
+                self.editor_state
+                    .show_filtered_entries(&self.options, &self.filters);
                 Command::none()
             }
             Message::DisplayTypeSelected(display_type) => {
                 self.options.display_type.selected = Some(display_type);
-                self.editor_state.show_filtered_entries(&self.options);
+                self.editor_state
+                    .show_filtered_entries(&self.options, &self.filters);
                 Command::none()
             }
             Message::RemoveFoldersToggled(is_active) => {
@@ -201,20 +225,14 @@ impl Application for Mareto {
             ui::top_level_actions(),
             Rule::horizontal(1),
             text("Options"),
-            ui::options(&self.options),
+            ui::options(&self.options, &self.filters),
         ]
         .width(400)
         .spacing(12);
 
         let right_pane = column![
             ui::editor(&self.editor_state),
-            ui::find_and_replace(
-                self.editor_state
-                    .open_folder
-                    .as_ref()
-                    .map(|s| s.as_str())
-                    .unwrap_or("")
-            ),
+            ui::find_and_replace(self.editor_state.open_folder.as_deref().unwrap_or("")),
         ]
         .spacing(12);
 

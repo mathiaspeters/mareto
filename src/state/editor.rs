@@ -2,7 +2,7 @@ use iced::widget::text_editor;
 
 use crate::fs::{EntryType, FileSystemEntry};
 
-use super::{DisplayType, Options, SortingOption};
+use super::{DisplayType, FilterOptions, Options, SortingOption};
 
 #[derive(Debug, Default)]
 pub struct EditorState {
@@ -14,8 +14,8 @@ pub struct EditorState {
 }
 
 impl EditorState {
-    pub fn show_filtered_entries(&mut self, options: &Options) {
-        let re = match &options.filter_input.regex {
+    pub fn show_filtered_entries(&mut self, options: &Options, filter_options: &FilterOptions) {
+        let re = match &filter_options.filter_input.state.regex {
             Some(Ok(re)) => Some(re),
             Some(Err((re, _))) => re.as_ref(),
             _ => None,
@@ -24,7 +24,7 @@ impl EditorState {
             .entries
             .iter()
             .filter_map(|entry| {
-                if Self::entry_is_visible(entry, options) {
+                if Self::entry_is_visible(entry, filter_options) {
                     let display_path = self.format_entry(
                         entry,
                         options
@@ -35,21 +35,19 @@ impl EditorState {
                     match &re {
                         Some(re) if re.is_match(&display_path) => Some(display_path),
                         None => {
-                            if options.filter_input.case_sensitive {
-                                if display_path.contains(&options.filter_input.input) {
+                            if filter_options.filter_input.state.case_sensitive {
+                                if display_path.contains(&filter_options.filter_input.state.input) {
                                     Some(display_path)
                                 } else {
                                     None
                                 }
+                            } else if display_path
+                                .to_lowercase()
+                                .contains(&filter_options.filter_input.state.input.to_lowercase())
+                            {
+                                Some(display_path)
                             } else {
-                                if display_path
-                                    .to_lowercase()
-                                    .contains(&options.filter_input.input.to_lowercase())
-                                {
-                                    Some(display_path)
-                                } else {
-                                    None
-                                }
+                                None
                             }
                         }
                         _ => None,
@@ -70,16 +68,28 @@ impl EditorState {
         self.contents = text_editor::Content::with_text(&content);
     }
 
-    fn entry_is_visible(entry: &FileSystemEntry, options: &Options) -> bool {
-        if (matches!(entry.entry_type, EntryType::File) && !options.show_files)
-            || (matches!(entry.entry_type, EntryType::Folder) && !options.show_folders)
+    fn entry_is_visible(entry: &FileSystemEntry, filter_options: &FilterOptions) -> bool {
+        if (matches!(entry.entry_type, EntryType::File) && !filter_options.show_files.state)
+            || (matches!(entry.entry_type, EntryType::Folder) && !filter_options.show_folders.state)
         {
             return false;
         }
-        if options.min_depth.is_active && options.min_depth.limit.is_some_and(|l| entry.depth < l) {
+        if filter_options.min_depth.state.is_active
+            && filter_options
+                .min_depth
+                .state
+                .limit
+                .is_some_and(|l| entry.depth < l)
+        {
             return false;
         }
-        if options.max_depth.is_active && options.max_depth.limit.is_some_and(|l| entry.depth > l) {
+        if filter_options.max_depth.state.is_active
+            && filter_options
+                .max_depth
+                .state
+                .limit
+                .is_some_and(|l| entry.depth > l)
+        {
             return false;
         }
         true
