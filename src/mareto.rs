@@ -97,88 +97,57 @@ impl Application for Mareto {
 
             // Options updates
             Message::FilterUpdated(filter) => {
-                self.filters.filter_input.state.input = filter;
-                self.filters.filter_input.state.update_regex();
+                self.filters.update_text_filter(filter, &self.editor_state);
                 self.editor_state
                     .show_filtered_entries(&self.options, &self.filters);
                 Command::none()
             }
             Message::FilterRegexToggled => {
-                self.filters.filter_input.state.use_regex =
-                    !self.filters.filter_input.state.use_regex;
-                self.filters.filter_input.state.update_regex();
+                self.filters.toggle_use_regex(&self.editor_state);
                 self.editor_state
                     .show_filtered_entries(&self.options, &self.filters);
                 Command::none()
             }
             Message::FilterCaseSensitivityToggled => {
-                self.filters.filter_input.state.case_sensitive =
-                    !self.filters.filter_input.state.case_sensitive;
-                self.filters.filter_input.state.update_regex();
+                self.filters.toggle_case_sensitivity(&self.editor_state);
                 self.editor_state
                     .show_filtered_entries(&self.options, &self.filters);
                 Command::none()
             }
             Message::MinDepthToggled(is_active) => {
-                self.filters.min_depth.state.is_active = is_active;
+                self.filters
+                    .set_min_depth_active(is_active, &self.editor_state);
                 self.editor_state
                     .show_filtered_entries(&self.options, &self.filters);
                 Command::none()
             }
-            Message::MinDepthLimitChanged(mut limit) => {
-                limit.retain(|c| c.is_numeric());
-                self.filters.min_depth.state.limit = if limit.is_empty() {
-                    None
-                } else {
-                    Some(limit.parse().expect("Only numbers should still be there"))
-                };
-                match (
-                    self.filters.min_depth.state.limit,
-                    self.filters.max_depth.state.limit,
-                ) {
-                    (Some(min_limit), Some(max_limit)) if max_limit < min_limit => {
-                        self.filters.max_depth.state.limit = Some(min_limit);
-                    }
-                    _ => {}
-                }
+            Message::MinDepthLimitChanged(limit) => {
+                self.filters.set_min_depth_limit(limit, &self.editor_state);
                 self.editor_state
                     .show_filtered_entries(&self.options, &self.filters);
                 Command::none()
             }
             Message::MaxDepthToggled(is_active) => {
-                self.filters.max_depth.state.is_active = is_active;
+                self.filters
+                    .set_max_depth_active(is_active, &self.editor_state);
                 self.editor_state
                     .show_filtered_entries(&self.options, &self.filters);
                 Command::none()
             }
-            Message::MaxDepthLimitChanged(mut limit) => {
-                limit.retain(|c| c.is_numeric());
-                self.filters.max_depth.state.limit = if limit.is_empty() {
-                    None
-                } else {
-                    Some(limit.parse().expect("Only numbers should still be there"))
-                };
-                match (
-                    self.filters.min_depth.state.limit,
-                    self.filters.max_depth.state.limit,
-                ) {
-                    (Some(min_limit), Some(max_limit)) if min_limit > max_limit => {
-                        self.filters.min_depth.state.limit = Some(max_limit);
-                    }
-                    _ => {}
-                }
+            Message::MaxDepthLimitChanged(limit) => {
+                self.filters.set_max_depth_limit(limit, &self.editor_state);
                 self.editor_state
                     .show_filtered_entries(&self.options, &self.filters);
                 Command::none()
             }
             Message::ShowFilesToggled(is_active) => {
-                self.filters.show_files.state = is_active;
+                self.filters.set_show_files(is_active, &self.editor_state);
                 self.editor_state
                     .show_filtered_entries(&self.options, &self.filters);
                 Command::none()
             }
             Message::ShowFoldersToggled(is_active) => {
-                self.filters.show_folders.state = is_active;
+                self.filters.set_show_folders(is_active, &self.editor_state);
                 self.editor_state
                     .show_filtered_entries(&self.options, &self.filters);
                 Command::none()
