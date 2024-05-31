@@ -1,6 +1,9 @@
 use regex::{Regex, RegexBuilder};
 
-use crate::fs::{EntryType, FileSystemEntry};
+use crate::{
+    bit_set::BitSet,
+    fs::{EntryType, FileSystemEntry},
+};
 
 use super::EditorState;
 
@@ -95,13 +98,13 @@ impl FilterOptions {
             _ => None,
         };
 
-        let mut tmp = Vec::new();
-        std::mem::swap(&mut tmp, &mut self.filter_input.filtered);
-        tmp.resize(editor_state.entries.len(), true);
-        tmp.iter_mut()
+        self.filter_input
+            .is_visible
+            .resize(editor_state.entries.len());
+        (0..self.filter_input.is_visible.size)
             .zip(editor_state.entries.iter())
-            .for_each(|(is_visible, entry)| {
-                *is_visible = match &re {
+            .for_each(|(i, entry)| {
+                let is_set = match &re {
                     Some(re) if re.is_match(&entry.path) => true,
                     None => {
                         if self.filter_input.state.case_sensitive {
@@ -114,7 +117,8 @@ impl FilterOptions {
                         }
                     }
                     _ => false,
-                }
+                };
+                self.filter_input.is_visible.set_bit(i, is_set);
             });
     }
 
@@ -143,14 +147,14 @@ impl Default for FilterOptions {
 #[derive(Debug, Clone)]
 pub struct FilterState<T> {
     pub state: T,
-    pub filtered: Vec<bool>,
+    pub is_visible: BitSet,
 }
 
 impl<T> FilterState<T> {
     pub fn new(initial: T) -> Self {
         Self {
             state: initial,
-            filtered: Vec::new(),
+            is_visible: BitSet::new(),
         }
     }
 
@@ -158,11 +162,12 @@ impl<T> FilterState<T> {
     where
         F: Fn(&FileSystemEntry) -> bool,
     {
-        self.filtered.resize(editor_state.entries.len(), true);
-        self.filtered
-            .iter_mut()
+        self.is_visible.resize(editor_state.entries.len());
+        (0..self.is_visible.size)
             .zip(editor_state.entries.iter())
-            .for_each(|(is_visible, entry)| *is_visible = op(entry));
+            .for_each(|(i, entry)| {
+                self.is_visible.set_bit(i, op(entry));
+            });
     }
 }
 

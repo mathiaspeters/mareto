@@ -17,25 +17,14 @@ impl BitSet {
         self.chunks.resize(new_size.div_ceil(8), 0);
     }
 
-    pub fn set_bit(&mut self, bit_index: usize) {
+    pub fn set_bit(&mut self, bit_index: usize, value: bool) {
         if bit_index >= self.size {
             return;
         }
         let chunk = bit_index / 8;
         let bit = bit_index % 8;
-        let mask = 1_u8 << bit;
-        self.chunks[chunk] |= mask;
-    }
-
-    pub fn unset_bit(&mut self, bit_index: usize) {
-        if bit_index >= self.size {
-            return;
-        }
-        let chunk = bit_index / 8;
-        let bit = bit_index % 8;
-        let mask = 1_u8 << bit;
-        let mask = !mask;
-        self.chunks[chunk] &= mask;
+        self.chunks[chunk] &= !(1_u8 << bit);
+        self.chunks[chunk] |= (value as u8) << bit;
     }
 
     pub fn is_bit_set(&self, bit_index: usize) -> bool {
@@ -85,11 +74,7 @@ mod tests {
         let mut bit_set = BitSet::new();
         bit_set.resize(size);
         for (bit, value) in bits_to_set {
-            if value {
-                bit_set.set_bit(bit);
-            } else {
-                bit_set.unset_bit(bit);
-            }
+            bit_set.set_bit(bit, value);
         }
         assert_eq!(bit_set.chunks, expected);
     }
