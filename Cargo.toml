@@ -9,3 +9,6 @@ edition = "2021"
 iced = "0.12"
 regex = "1.10"
 rfd = "0.14"
+
+[dev-dependencies]
+rstest = "0.20.0"

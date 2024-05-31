@@ -1,3 +1,4 @@
+mod bit_set;
 mod fs;
 mod mareto;
 mod state;
