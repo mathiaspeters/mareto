@@ -85,6 +85,7 @@ impl Application for Mareto {
             // Top-level actions
             Message::OpenFolder => Command::perform(pick_folder(), Message::FolderSelected),
             Message::FolderSelected(Ok((path, entries))) => {
+                self.filters.resize_filters(entries.len());
                 self.editor_state.open_folder = Some(path);
                 self.editor_state.entries = entries;
                 self.editor_state
@@ -97,57 +98,68 @@ impl Application for Mareto {
 
             // Options updates
             Message::FilterUpdated(filter) => {
-                self.filters.update_text_filter(filter, &self.editor_state);
+                self.filters.filter_input.state.input = filter;
+                self.filters.update_text_filter(&self.editor_state);
                 self.editor_state
                     .show_filtered_entries(&self.options, &self.filters);
                 Command::none()
             }
             Message::FilterRegexToggled => {
-                self.filters.toggle_use_regex(&self.editor_state);
+                self.filters.filter_input.state.use_regex =
+                    !self.filters.filter_input.state.use_regex;
+                self.filters.update_text_filter(&self.editor_state);
                 self.editor_state
                     .show_filtered_entries(&self.options, &self.filters);
                 Command::none()
             }
             Message::FilterCaseSensitivityToggled => {
-                self.filters.toggle_case_sensitivity(&self.editor_state);
+                self.filters.filter_input.state.case_sensitive =
+                    !self.filters.filter_input.state.case_sensitive;
+                self.filters.update_text_filter(&self.editor_state);
                 self.editor_state
                     .show_filtered_entries(&self.options, &self.filters);
                 Command::none()
             }
             Message::MinDepthToggled(is_active) => {
-                self.filters
-                    .set_min_depth_active(is_active, &self.editor_state);
+                self.filters.min_depth.state.is_active = is_active;
+                self.filters.update_min_depth(&self.editor_state);
                 self.editor_state
                     .show_filtered_entries(&self.options, &self.filters);
                 Command::none()
             }
             Message::MinDepthLimitChanged(limit) => {
-                self.filters.set_min_depth_limit(limit, &self.editor_state);
+                self.filters.min_depth.state.set_from_str(limit);
+                self.filters.normalize_max_depth();
+                self.filters.update_min_depth(&self.editor_state);
                 self.editor_state
                     .show_filtered_entries(&self.options, &self.filters);
                 Command::none()
             }
             Message::MaxDepthToggled(is_active) => {
-                self.filters
-                    .set_max_depth_active(is_active, &self.editor_state);
+                self.filters.max_depth.state.is_active = is_active;
+                self.filters.update_min_depth(&self.editor_state);
                 self.editor_state
                     .show_filtered_entries(&self.options, &self.filters);
                 Command::none()
             }
             Message::MaxDepthLimitChanged(limit) => {
-                self.filters.set_max_depth_limit(limit, &self.editor_state);
+                self.filters.max_depth.state.set_from_str(limit);
+                self.filters.normalize_min_depth();
+                self.filters.update_max_depth(&self.editor_state);
                 self.editor_state
                     .show_filtered_entries(&self.options, &self.filters);
                 Command::none()
             }
             Message::ShowFilesToggled(is_active) => {
-                self.filters.set_show_files(is_active, &self.editor_state);
+                self.filters.show_files.state = is_active;
+                self.filters.update_show_files(&self.editor_state);
                 self.editor_state
                     .show_filtered_entries(&self.options, &self.filters);
                 Command::none()
             }
             Message::ShowFoldersToggled(is_active) => {
-                self.filters.set_show_folders(is_active, &self.editor_state);
+                self.filters.show_folders.state = is_active;
+                self.filters.update_show_folders(&self.editor_state);
                 self.editor_state
                     .show_filtered_entries(&self.options, &self.filters);
                 Command::none()

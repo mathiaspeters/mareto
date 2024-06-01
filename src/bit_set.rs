@@ -14,7 +14,7 @@ impl BitSet {
 
     pub fn resize(&mut self, new_size: usize) {
         self.size = new_size;
-        self.chunks.resize(new_size.div_ceil(8), 0);
+        self.chunks.resize(new_size.div_ceil(8), u8::MAX);
     }
 
     pub fn set_bit(&mut self, bit_index: usize, value: bool) {

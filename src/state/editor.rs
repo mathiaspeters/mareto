@@ -1,6 +1,6 @@
 use iced::widget::text_editor;
 
-use crate::fs::{EntryType, FileSystemEntry};
+use crate::{bit_set::BitSet, fs::FileSystemEntry};
 
 use super::{DisplayType, FilterOptions, Options, SortingOption};
 
@@ -15,16 +15,24 @@ pub struct EditorState {
 
 impl EditorState {
     pub fn show_filtered_entries(&mut self, options: &Options, filter_options: &FilterOptions) {
-        let re = match &filter_options.filter_input.state.regex {
-            Some(Ok(re)) => Some(re),
-            Some(Err((re, _))) => re.as_ref(),
-            _ => None,
+        let visibility_vectors = filter_options.get_visibility_vectors();
+        let mut is_visible = visibility_vectors[0].chunks.clone();
+        for vector in visibility_vectors.iter().skip(1) {
+            is_visible
+                .iter_mut()
+                .zip(vector.chunks.iter())
+                .for_each(|(left, right)| *left &= right);
+        }
+        let is_visible = BitSet {
+            chunks: is_visible,
+            size: visibility_vectors[0].size,
         };
-        let mut content = self
+        let mut entries = self
             .entries
             .iter()
-            .filter_map(|entry| {
-                if Self::entry_is_visible(entry, filter_options) {
+            .enumerate()
+            .filter_map(|(i, entry)| {
+                if is_visible.is_bit_set(i) {
                     let display_path = self.format_entry(
                         entry,
                         options
@@ -32,26 +40,7 @@ impl EditorState {
                             .selected
                             .unwrap_or(DisplayType::RelativePath),
                     );
-                    match &re {
-                        Some(re) if re.is_match(&display_path) => Some(display_path),
-                        None => {
-                            if filter_options.filter_input.state.case_sensitive {
-                                if display_path.contains(&filter_options.filter_input.state.input) {
-                                    Some(display_path)
-                                } else {
-                                    None
-                                }
-                            } else if display_path
-                                .to_lowercase()
-                                .contains(&filter_options.filter_input.state.input.to_lowercase())
-                            {
-                                Some(display_path)
-                            } else {
-                                None
-                            }
-                        }
-                        _ => None,
-                    }
+                    Some(display_path)
                 } else {
                     None
                 }
@@ -59,60 +48,48 @@ impl EditorState {
             .collect::<Vec<_>>();
         match options.sorting.selected {
             Some(SortingOption::SortAscending) => {
-                content.sort_unstable_by_key(|e| e.to_ascii_lowercase())
+                entries.sort_unstable_by_key(|e| e.to_ascii_lowercase())
             }
             Some(SortingOption::SortDescending) => {
-                content.sort_unstable_by_key(|e| std::cmp::Reverse(e.to_ascii_lowercase()))
+                entries.sort_unstable_by_key(|e| std::cmp::Reverse(e.to_ascii_lowercase()))
             }
             _ => {}
         }
-        let content = content.join("\n");
+        let content_size = entries.iter().map(|s| s.len()).sum();
+        let mut content = String::with_capacity(content_size);
+        entries.into_iter().for_each(|s| {
+            if matches!(
+                options
+                    .display_type
+                    .selected
+                    .expect("There must be a display type"),
+                DisplayType::AbsolutePath
+            ) {
+                content.push_str(
+                    self.open_folder
+                        .as_ref()
+                        .expect("A folder must have been opened to get here"),
+                );
+                content.push('/');
+            }
+            content.push_str(s);
+            content.push('\n');
+        });
         self.contents = text_editor::Content::with_text(&content);
     }
 
-    fn entry_is_visible(entry: &FileSystemEntry, filter_options: &FilterOptions) -> bool {
-        if (matches!(entry.entry_type, EntryType::File) && !filter_options.show_files.state)
-            || (matches!(entry.entry_type, EntryType::Folder) && !filter_options.show_folders.state)
-        {
-            return false;
-        }
-        if filter_options.min_depth.state.is_active
-            && filter_options
-                .min_depth
-                .state
-                .limit
-                .is_some_and(|l| entry.depth < l)
-        {
-            return false;
-        }
-        if filter_options.max_depth.state.is_active
-            && filter_options
-                .max_depth
-                .state
-                .limit
-                .is_some_and(|l| entry.depth > l)
-        {
-            return false;
-        }
-        true
-    }
-
-    fn format_entry(&'_ self, entry: &FileSystemEntry, display_type: DisplayType) -> String {
+    fn format_entry<'a>(
+        &'_ self,
+        entry: &'a FileSystemEntry,
+        display_type: DisplayType,
+    ) -> &'a str {
         match display_type {
-            DisplayType::AbsolutePath => format!(
-                "{}{}",
-                self.open_folder
-                    .as_ref()
-                    .expect("Folder must be set for this function to be called"),
-                &entry.path
-            ),
-            DisplayType::RelativePath => entry.path.to_owned(),
+            DisplayType::AbsolutePath | DisplayType::RelativePath => &entry.path,
             DisplayType::JustName => entry
                 .path
                 .split('/')
                 .last()
-                .expect("Entries cannot be empty and must have at least one path separator")
-                .to_owned(),
+                .expect("Entries cannot be empty and must have at least one path separator"),
         }
     }
 }

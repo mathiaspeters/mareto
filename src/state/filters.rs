@@ -17,75 +17,70 @@ pub struct FilterOptions {
 }
 
 impl FilterOptions {
-    pub fn update_text_filter(&mut self, input: String, editor_state: &EditorState) {
-        self.filter_input.state.input = input;
+    pub fn get_visibility_vectors(&self) -> Vec<&BitSet> {
+        vec![
+            &self.filter_input.is_visible,
+            &self.min_depth.is_visible,
+            &self.max_depth.is_visible,
+            &self.show_files.is_visible,
+            &self.show_folders.is_visible,
+        ]
+    }
+
+    pub fn resize_filters(&mut self, new_size: usize) {
+        self.filter_input.is_visible.resize(new_size);
+        self.min_depth.is_visible.resize(new_size);
+        self.max_depth.is_visible.resize(new_size);
+        self.show_files.is_visible.resize(new_size);
+        self.show_folders.is_visible.resize(new_size);
+    }
+
+    pub fn update_text_filter(&mut self, editor_state: &EditorState) {
         self.filter_input.state.update_regex();
         self.apply_text_filter(editor_state);
     }
 
-    pub fn toggle_use_regex(&mut self, editor_state: &EditorState) {
-        self.filter_input.state.use_regex = !self.filter_input.state.use_regex;
-        self.filter_input.state.update_regex();
-        self.apply_text_filter(editor_state);
-    }
-
-    pub fn toggle_case_sensitivity(&mut self, editor_state: &EditorState) {
-        self.filter_input.state.case_sensitive = !self.filter_input.state.case_sensitive;
-        self.filter_input.state.update_regex();
-        self.apply_text_filter(editor_state);
-    }
-
-    pub fn set_min_depth_active(&mut self, is_active: bool, editor_state: &EditorState) {
-        self.min_depth.state.is_active = is_active;
-        let limit = self.min_depth.state.limit.unwrap_or(0);
-        self.min_depth
-            .update(editor_state, |entry| !is_active || entry.depth >= limit);
-    }
-
-    pub fn set_min_depth_limit(&mut self, limit: String, editor_state: &EditorState) {
-        self.min_depth.state.limit = Self::parse_limit(limit);
-        match (self.min_depth.state.limit, self.max_depth.state.limit) {
-            (Some(min_limit), Some(max_limit)) if max_limit < min_limit => {
-                self.max_depth.state.limit = Some(min_limit);
-            }
-            _ => {}
-        }
-        let is_active = self.min_depth.state.is_active;
-        let limit = self.min_depth.state.limit.unwrap_or(0);
-        self.min_depth
-            .update(editor_state, |entry| !is_active || entry.depth >= limit);
-    }
-
-    pub fn set_max_depth_active(&mut self, is_active: bool, editor_state: &EditorState) {
-        self.max_depth.state.is_active = is_active;
-        let limit = self.max_depth.state.limit.unwrap_or(usize::MAX);
-        self.max_depth
-            .update(editor_state, |entry| !is_active || entry.depth <= limit);
-    }
-
-    pub fn set_max_depth_limit(&mut self, limit: String, editor_state: &EditorState) {
-        self.max_depth.state.limit = Self::parse_limit(limit);
+    pub fn normalize_min_depth(&mut self) {
         match (self.min_depth.state.limit, self.max_depth.state.limit) {
             (Some(min_limit), Some(max_limit)) if min_limit > max_limit => {
                 self.min_depth.state.limit = Some(max_limit);
             }
             _ => {}
         }
+    }
+
+    pub fn normalize_max_depth(&mut self) {
+        match (self.min_depth.state.limit, self.max_depth.state.limit) {
+            (Some(min_limit), Some(max_limit)) if max_limit < min_limit => {
+                self.max_depth.state.limit = Some(min_limit);
+            }
+            _ => {}
+        }
+    }
+
+    pub fn update_min_depth(&mut self, editor_state: &EditorState) {
+        let is_active = self.min_depth.state.is_active;
+        let limit = self.min_depth.state.limit.unwrap_or(0);
+        self.min_depth
+            .update(editor_state, |entry| !is_active || entry.depth >= limit);
+    }
+
+    pub fn update_max_depth(&mut self, editor_state: &EditorState) {
         let is_active = self.max_depth.state.is_active;
         let limit = self.max_depth.state.limit.unwrap_or(usize::MAX);
         self.max_depth
             .update(editor_state, |entry| !is_active || entry.depth <= limit);
     }
 
-    pub fn set_show_files(&mut self, should_show_files: bool, editor_state: &EditorState) {
-        self.show_files.state = should_show_files;
+    pub fn update_show_files(&mut self, editor_state: &EditorState) {
+        let should_show_files = self.show_files.state;
         self.show_files.update(editor_state, |entry| {
             should_show_files || !matches!(entry.entry_type, EntryType::File)
         });
     }
 
-    pub fn set_show_folders(&mut self, should_show_folders: bool, editor_state: &EditorState) {
-        self.show_folders.state = should_show_folders;
+    pub fn update_show_folders(&mut self, editor_state: &EditorState) {
+        let should_show_folders = self.show_folders.state;
         self.show_folders.update(editor_state, |entry| {
             should_show_folders || !matches!(entry.entry_type, EntryType::Folder)
         });
@@ -120,15 +115,6 @@ impl FilterOptions {
                 };
                 self.filter_input.is_visible.set_bit(i, is_set);
             });
-    }
-
-    fn parse_limit(mut limit: String) -> Option<usize> {
-        limit.retain(|c| c.is_numeric());
-        if limit.is_empty() {
-            None
-        } else {
-            Some(limit.parse().expect("Only numbers should still be there"))
-        }
     }
 }
 
@@ -214,4 +200,15 @@ impl FilterInput {
 pub struct DepthLimit {
     pub is_active: bool,
     pub limit: Option<usize>,
+}
+
+impl DepthLimit {
+    pub fn set_from_str(&mut self, mut limit: String) {
+        limit.retain(|c| c.is_numeric());
+        self.limit = if limit.is_empty() {
+            None
+        } else {
+            Some(limit.parse().expect("Only numbers should still be there"))
+        }
+    }
 }
