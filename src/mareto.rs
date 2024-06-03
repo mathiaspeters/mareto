@@ -85,11 +85,23 @@ impl Application for Mareto {
             // Top-level actions
             Message::OpenFolder => Command::perform(pick_folder(), Message::FolderSelected),
             Message::FolderSelected(Ok((path, entries))) => {
-                self.filters.resize_filters(entries.len());
-                self.editor_state.open_folder = Some(path);
-                self.editor_state.entries = entries;
-                self.editor_state
-                    .show_filtered_entries(&self.options, &self.filters);
+                if !self
+                    .editor_state
+                    .open_folder
+                    .as_ref()
+                    .is_some_and(|p| p == path.as_str())
+                {
+                    self.filters.resize_filters(entries.len());
+                    self.editor_state.open_folder = Some(path);
+                    self.editor_state.entries = entries;
+                    self.filters.update_text_filter(&self.editor_state);
+                    self.filters.update_min_depth(&self.editor_state);
+                    self.filters.update_max_depth(&self.editor_state);
+                    self.filters.update_show_files(&self.editor_state);
+                    self.filters.update_show_folders(&self.editor_state);
+                    self.editor_state
+                        .show_filtered_entries(&self.options, &self.filters);
+                }
                 Command::none()
             }
             Message::FolderSelected(_) => Command::none(),
