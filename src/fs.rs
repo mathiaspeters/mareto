@@ -12,6 +12,7 @@ pub enum EntryType {
 pub struct FileSystemEntry {
     pub og_path: String,
     pub path: String,
+    pub last_sep: usize,
     pub depth: usize,
     pub entry_type: EntryType,
 }
@@ -59,9 +60,15 @@ impl<'a> PathFinder<'a> {
                             .expect("All paths found need to be under the initial path")
                             .to_owned();
                         let path = og_path.clone();
+                        let last_sep = path
+                            .char_indices()
+                            .rev()
+                            .find_map(|(i, c)| if c == '/' { Some(i) } else { None })
+                            .expect("There must be at least one separator");
                         let entry = FileSystemEntry {
                             og_path,
                             path,
+                            last_sep,
                             depth,
                             entry_type,
                         };

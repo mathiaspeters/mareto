@@ -85,11 +85,7 @@ impl EditorState {
     ) -> &'a str {
         match display_type {
             DisplayType::AbsolutePath | DisplayType::RelativePath => &entry.path,
-            DisplayType::JustName => entry
-                .path
-                .split('/')
-                .last()
-                .expect("Entries cannot be empty and must have at least one path separator"),
+            DisplayType::JustName => &entry.path[entry.last_sep + 1..],
         }
     }
 }
