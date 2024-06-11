@@ -72,5 +72,12 @@ macro_rules! drop_down_enum {
     };
 }
 
-drop_down_enum!(SortingOption, NoSorting, SortAscending, SortDescending);
+drop_down_enum!(
+    SortingOption,
+    NoSorting,
+    SortAscendingCaseInsensitive,
+    SortAscendingCaseSensitive,
+    SortDescendingCaseInsensitive,
+    SortDescendingCaseSensitive
+);
 drop_down_enum!(DisplayType, AbsolutePath, RelativePath, JustName);

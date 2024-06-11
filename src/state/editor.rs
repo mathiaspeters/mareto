@@ -51,11 +51,17 @@ impl EditorState {
             .unzip();
         let mut filtered = filtered.into_iter().enumerate().collect::<Vec<_>>();
         match options.sorting.selected {
-            Some(SortingOption::SortAscending) => {
+            Some(SortingOption::SortAscendingCaseInsensitive) => {
                 filtered.sort_unstable_by_key(|(_, i)| entries[*i].to_ascii_lowercase())
             }
-            Some(SortingOption::SortDescending) => filtered
+            Some(SortingOption::SortAscendingCaseSensitive) => {
+                filtered.sort_unstable_by_key(|(_, i)| entries[*i])
+            }
+            Some(SortingOption::SortDescendingCaseInsensitive) => filtered
                 .sort_unstable_by_key(|(_, i)| std::cmp::Reverse(entries[*i].to_ascii_lowercase())),
+            Some(SortingOption::SortDescendingCaseSensitive) => {
+                filtered.sort_unstable_by_key(|(_, i)| std::cmp::Reverse(entries[*i]))
+            }
             _ => {}
         }
         let (sort_indices, filtered): (Vec<usize>, Vec<usize>) = filtered.into_iter().unzip();
