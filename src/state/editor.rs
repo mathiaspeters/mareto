@@ -8,6 +8,7 @@ use super::{DisplayType, FilterOptions, Options, SortingOption};
 pub struct EditorState {
     pub open_folder: Option<String>,
     pub entries: Vec<FileSystemEntry>,
+    pub filtered_indices: Vec<usize>,
 
     pub contents: text_editor::Content,
     pub find_and_replace: FindAndReplace,
@@ -27,7 +28,8 @@ impl EditorState {
             chunks: is_visible,
             size: visibility_vectors[0].size,
         };
-        let mut entries = self
+        let mut content_size = 0;
+        let (filtered, entries): (Vec<usize>, Vec<&str>) = self
             .entries
             .iter()
             .enumerate()
@@ -40,39 +42,42 @@ impl EditorState {
                             .selected
                             .unwrap_or(DisplayType::RelativePath),
                     );
-                    Some(display_path)
+                    content_size += display_path.len();
+                    Some((i, display_path))
                 } else {
                     None
                 }
             })
-            .collect::<Vec<_>>();
+            .unzip();
+        let mut filtered = filtered.into_iter().enumerate().collect::<Vec<_>>();
         match options.sorting.selected {
             Some(SortingOption::SortAscending) => {
-                entries.sort_unstable_by_key(|e| e.to_ascii_lowercase())
+                filtered.sort_unstable_by_key(|(_, i)| entries[*i].to_ascii_lowercase())
             }
-            Some(SortingOption::SortDescending) => {
-                entries.sort_unstable_by_key(|e| std::cmp::Reverse(e.to_ascii_lowercase()))
-            }
+            Some(SortingOption::SortDescending) => filtered
+                .sort_unstable_by_key(|(_, i)| std::cmp::Reverse(entries[*i].to_ascii_lowercase())),
             _ => {}
         }
-        let content_size = entries.iter().map(|s| s.len()).sum();
+        let (sort_indices, filtered): (Vec<usize>, Vec<usize>) = filtered.into_iter().unzip();
+        self.filtered_indices = filtered;
         let mut content = String::with_capacity(content_size);
-        entries.into_iter().for_each(|s| {
-            if matches!(
-                options
-                    .display_type
-                    .selected
-                    .expect("There must be a display type"),
-                DisplayType::AbsolutePath
-            ) {
-                content.push_str(
-                    self.open_folder
-                        .as_ref()
-                        .expect("A folder must have been opened to get here"),
-                );
-                content.push('/');
-            }
-            content.push_str(s);
+        let absolute_prefix = if matches!(
+            options
+                .display_type
+                .selected
+                .expect("There must be a display type"),
+            DisplayType::AbsolutePath
+        ) {
+            self.open_folder
+                .as_ref()
+                .expect("A folder must have been opened to get here")
+                .to_owned()
+        } else {
+            String::new()
+        };
+        sort_indices.into_iter().for_each(|i| {
+            content.push_str(&absolute_prefix);
+            content.push_str(entries[i]);
             content.push('\n');
         });
         self.contents = text_editor::Content::with_text(&content);
