@@ -13,7 +13,7 @@ impl button::StyleSheet for InactiveToggleButton {
             text_color: style.palette().text,
             border: Border {
                 color: border_color,
-                width: 1.0,
+                width: 2.0,
                 ..Default::default()
             },
             ..Default::default()
