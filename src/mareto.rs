@@ -203,7 +203,7 @@ impl Application for Mareto {
 
             // Editor actions
             Message::EditAction(action) => {
-                self.editor_state.contents.perform(action);
+                self.editor_state.handle_action(action);
                 Command::none()
             }
         }

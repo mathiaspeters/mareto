@@ -15,6 +15,32 @@ pub struct EditorState {
 }
 
 impl EditorState {
+    pub fn handle_action(&mut self, action: text_editor::Action) {
+        match action {
+            text_editor::Action::Edit(edit) if !self.handle_edit(&edit) => {}
+            _ => self.contents.perform(action),
+        }
+    }
+
+    fn handle_edit(&mut self, edit: &text_editor::Edit) -> bool {
+        let (row, col) = self.contents.cursor_position();
+        match edit {
+            text_editor::Edit::Insert(_) => true,
+            text_editor::Edit::Paste(_) => true,
+            text_editor::Edit::Backspace => col > 0,
+            text_editor::Edit::Delete => {
+                col < self
+                    .contents
+                    .line(row)
+                    .expect(
+                        "The contents cursor position cannot point to a row that does not exist",
+                    )
+                    .len()
+            }
+            text_editor::Edit::Enter => false,
+        }
+    }
+
     pub fn show_filtered_entries(&mut self, options: &Options, filter_options: &FilterOptions) {
         let visibility_vectors = filter_options.get_visibility_vectors();
         let mut is_visible = visibility_vectors[0].chunks.clone();
