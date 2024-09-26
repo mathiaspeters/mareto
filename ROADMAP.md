@@ -15,9 +15,10 @@ Note: This roadmap is a living document that can and will be changed
             - [ ] Using rayon could helps speed it up
             - [ ] Making the item filtering code more SIMD-friendly could help
 - [ ] Implement editor handling
-    - [ ] React to editor events
-    - [ ] Disallow removing lines. If user tries to remove a line, instead make the line empty but keep it there
-    - [ ] Disallow adding lines in between existing items
+    - [x] React to editor events
+    - [x] Disallow removing lines. If user tries to remove a line, instead make the line empty but keep it there
+    - [x] Disallow adding lines in between existing items
+    - [ ] Selecting multiple lines and removing them still works, but it shouldn't
     - [ ] A single newline can be added at the end of the editor. Once the user has put some content in that line, another newline can be added at the end. New items would be created for these 
 - [ ] Implement apply changes
     - [ ] Rename files accordingly
